@@ -34,7 +34,6 @@ class EllipticCurveFp(object):
     def point(self, x, y):
         """ Factory method to make points on a curve """
         return Point(self, x, y)
-    
         
     def generator(self):
         """ Return the ECC generator point G """
