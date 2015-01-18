@@ -13,14 +13,16 @@
     - French National Agency for the Security of Information Systems FRP256v1
       http://www.legifrance.gouv.fr/affichTexte.do?cidTexte=JORFTEXT000024668816
     
-  These ECC definitions include three classes of curves defined over the field
-  of integers modulo a prime p (Fp).  Each class of curve has an equation and
-  assoicated parameters unique to the class type.  Three classes of curves
+  These ECC definitions include four classes of curves defined over the field
+  of integers modulo a prime p.  Each class of curve has an equation and
+  assoicated parameters unique to the class type.  Four classes of curves
   are described:
     
-    SmallWeierstrassCurveFp       y**2 = x**3 + a*x + b  mod p
-    EdwardsCurveFp         x**2 + y**2 = c*(1 + d*x**2 * y**2)  mod p
-    MontgomeryCurveFp             y**2 = x**3 + a*x**2 + x  mod p
+    SmallWeierstrassCurveFp               y**2 == x**3 + a*x + b
+    KoblitzCurveFp                        y**2 == x**3       + b
+    TwistedEdwardsCurveFp        a*x**2 + y**2 ==    1 + d*x**2*y**2 
+    EdwardsCurveFp                 x**2 + y**2 == c*(1 + d*x**2*y**2) 
+    MontgomeryCurveFp                     y**2 == x**3 + a*x**2 + x 
        
   The defintions include for each curve type:
     
@@ -28,32 +30,41 @@
     strength - an integer providing the estimated cryptographic strength
                of the curve as a power of 2                 
     oid - a list of integers that correspond to the associated ASN.1 object
-          identifier. The oid is listed as 'None' if there is no assigned oid           
-    p - The prime modulus of the group (Fp). Often p is a Mersenne prime
-        or psuedo-Mersenne prime to facilitate efficient modular inversion
+          identifier. The oid is listed as 'None' if the assigned oid is unknown        
+    p - The prime modulus of the group GF(p). Often p is a Mersenne prime
+        or psuedo-Mersenne prime to facilitate efficient modular operations
     xG - the x-coordinate of a generator point G for the curve        
     yG - the y-coordinate of a generator point G for the curve
     n  - the order of the generator point G
     h - the cofactor of the curve
-    seed - used for some random curves to demonstrate provenance of curve and
-           included for reference when available
+    seed - used for some random curves to demonstrate the provenance of
+           the curve parameters and included for reference when available
 
-  Each curve type has the following parameters
-    
-    Small Wierstrass      y**2 = x**3 + a*x + b  mod p     
+  Each curve type has the following equations and parameters
+  
+    Small Wierstrass     y**2 == x**3 + a*x + b  mod p     
       a - often set to p-3 for efficiency        
       b - selected for the security properties of the curve shape
       z - used by 'twisted' Brainpool curves for isogenous transform
           of untwisted curve to a curve with a = p-3
-        
-    Montgomery            y**2 = x**3 + c*x**2 + x  mod p     
-      c - selected for the security properties of the curve shape
-              
-    Edwards               x**2 + y**2 = c*(1 + d*x**2 * y**2) mod p    
-      c - typically set to 1 so the equation is reduced to:
-                         x**2 + y**2 = 1 + d*x**2 * y**2  mod p               
-      d - selected for the security properties of the curve shape  
+  
+    Small Wierstrass      y**2 == x**3 + a*x + b  mod p     
+      a - often set to p-3 for efficiency        
+      b - selected for the security properties of the curve shape
+      z - used by 'twisted' Brainpool curves for isogenous transform
+          of untwisted curve to a curve with a = p-3
 
+    Koblitz               y**2 == x**3 + b  mod p           
+      b - selected for the security properties of the curve shape
+          
+    Edwards              x**2 + y**2 == c*(1 + d*x**2 * y**2) mod p    
+      c - typically set to 1 so the equation is reduced to:
+                         x**2 + y**2 == 1 + d*x**2 * y**2  mod p               
+      d - selected for the security properties of the curve shape  
+        
+    Montgomery           y**2 == x**3 + c*x**2 + x  mod p     
+      c - selected for the security properties of the curve shape
+ 
     
     Paul A. Lambert, December 2013
 """
@@ -62,26 +73,27 @@ from ecc import SmallWeierstrassCurveFp, EdwardsCurveFp, MontgomeryCurveFp
 class SECP_192r1( SmallWeierstrassCurveFp ):
     curveId = 'secp192r1'
     strength = 80
-    # secp192r1 OBJECT IDENTIFIER ::= {
-    #  iso(1) member-body(2) us(840) ansi-X9-62(10045) curves(3) prime(1) 1 }
-    oid = (1, 2, 840, 10045, 3, 1, 1)
+    #  {iso(1) member-body(2) us(840) ansi-X9-62(10045) curves(3) prime(1) 1 }
+    oid = (1,2,840,10045,3,1,1)
     # p = 2**192 - 2**64 - 1
     p = 0xfffffffffffffffffffffffffffffffeffffffffffffffff
     a = p-3  # all NIST mod p curves use a = -3 , note  -3 % p = (p-3)
-    seed = 0x3045ae6fc8422f64ed579528d38120eae12196d5
-    seed_c = 0x3099d2bbbfcb2538542dcd5fb078b6ef5f3d6fe2c745de65L
-    # assert c == SHA1(seed)
-    # assert (c*b**2 + 27) % p == 0
+
     b = 0x64210519e59c80e70fa7e9ab72243049feb8deecc146b9b1
     # Generator point coordinate (x,y), order n and cofactor h
     # Any point G=(x,y) can serve as base point. User may generate their own
     # to ensure cryptographic separation of networks.
-    # Seed used to for this random generator point
 
     xG = 0x188da80eb03090f67cbf20eb43a18800f4ff0afd82ff1012
     yG = 0x07192b95ffc8da78631011ed6b24cdd573f977a11e794811
     n = 6277101735386680763835789423176059013767194773182842284081
     h = 1 # cofactor
+
+    seed = 0x3045ae6fc8422f64ed579528d38120eae12196d5  # unknown provenance
+    seed_c = 0x3099d2bbbfcb2538542dcd5fb078b6ef5f3d6fe2c745de65L
+    # NIST validation of parameters
+    # assert seed_c == SHA1(seed)
+    # assert (seed_c*b**2 + 27) % p == 0
 
 class NIST_P192(SECP_192r1):  # NIST renamed secp192r1
     curveId = 'nistP192'
@@ -93,29 +105,28 @@ class SECP_224r1( SmallWeierstrassCurveFp ):
     oid = (1, 3, 132, 0, 33) 
     # p = 2**224 - 2**96 + 1
     p = 0xffffffffffffffffffffffffffffffff000000000000000000000001L
-    a = p-3  # all NIST mod p curves use a = -3 , note  -3 % p = (p-3)
+    a = p - 3
     b = 0xb4050a850c04b3abf54132565044b0b7d7bfd8ba270b39432355ffb4    
-    seed = 0xbd71344799d5c7fcdc45b59fa3b9ab8f6a948bc5
-    seed_c = 0x5b056c7e11dd68f40469ee7f3c7a7d74f7d121116506d031218291fb
     xG = 0xb70e0cbd6bb4bf7f321390b94a03c1d356c21122343280d6115c1d21
     yG = 0xbd376388b5f723fb4c22dfe6cd4375a05a07476444d5819985007e34
     n = 0xffffffffffffffffffffffffffff16a2e0b8f03e13dd29455c5c2a3d
     h = 1
+    
+    seed = 0xbd71344799d5c7fcdc45b59fa3b9ab8f6a948bc5
+    seed_c = 0x5b056c7e11dd68f40469ee7f3c7a7d74f7d121116506d031218291fb
 
 class NIST_P224( SECP_224r1 ):  # NIST renamed Secp224r1
     curveId = 'nistP224'
 
-class SECP_256k1( SmallWeierstrassCurveFp ):
-    """ Certicom secp256-k1 curve - used in Bit Coin, not used by NIST
-        A Koblitz curve (a=0)    y**2 == x**2 + b mod p   
+class SECP_256k1( KoblitzCurveFp ):
+    """ Certicom secp256-k1 curve - used in Bitcoin, not used by NIST
     """
     curveId = 'secp256k1'
     strength = 128
     # {iso(1) identified-organization(3) certicom(132) curve(0) 10}
-    oid = (1, 3, 132, 0, 10) 
+    oid = (1,3,132,0,10) 
     # p = 2**256 - 2**32 - 2**29 - 2**28 - 2**7 - 2**26 - 2**24 - 1
     p  = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f
-    a  = 0
     b  = 7
     xG = 0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798
     yG = 0x483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8
@@ -123,13 +134,14 @@ class SECP_256k1( SmallWeierstrassCurveFp ):
     h  = 1
     
 class SECP_256r1( SmallWeierstrassCurveFp ):
+    """ Commonly used NIST/SECP curve """
     curveId ='secp256r1'
     strength = 128
     # {iso(1) member-body(2) us(840) ansi-X9-62(10045) curves(3) prime(1) 7}
-    oid = (1, 2, 840, 10045, 3, 1, 7) 
+    oid = (1,2,840,10045,3,1,7) 
     # p = 2**256 - 2**224 + 2**192 + 2**96 - 1
     p = 0xffffffff00000001000000000000000000000000ffffffffffffffffffffffff
-    a = p-3  # all NIST mod p curves use a = -3 , note  -3 % p = (p-3)
+    a = p - 3 
     b = 0x5ac635d8aa3a93e7b3ebbd55769886bc651d06b0cc53b0f63bce3c3e27d2604b
     xG = 0x6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296
     yG = 0x4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5
@@ -144,17 +156,18 @@ class NIST_P256(SECP_256r1): # NIST renamed secp256r1
 
 class WAPI( SmallWeierstrassCurveFp ):
     """ Chinese Commercial Cryptography Administration Curve
+        Documented in WAPI spec.  another may be in implementations
+        oid = (1, 2, 156, 11235, 1, 1, 1, 2, 1)  # implementations?
     """
     curveId = 'wapi'
     strength = 96
-    oid = (1, 2, 156, 1001, 5, 40, 1)
-    oid = (1, 2, 156, 11235, 1, 1, 1, 2, 1)  # implementations
-    p =  0xbdb6f4fe3e8b1d9e0da8c0d46f4c318cefe4afe3b6b8551f
-    a =  0xbb8e5e8fbc115e139fe6a814fe48aaa6f0ada1aa5df91985
-    b =  0x1854bebdc31b21b7aefc80ab0ecd10d5b1b3308e6dbf11c1
-    xG =  0x4ad5f7048de709ad51236de65e4d4b482c836dc6e4106640
-    yG =  0x02bb3a02d4aaadacae24817a4ca3a1b014b5270432db27d2
-    n = None # 
+    oid = (1,2,156,1001,5,40,1)
+    p = 0xbdb6f4fe3e8b1d9e0da8c0d46f4c318cefe4afe3b6b8551f
+    a = 0xbb8e5e8fbc115e139fe6a814fe48aaa6f0ada1aa5df91985
+    b = 0x1854bebdc31b21b7aefc80ab0ecd10d5b1b3308e6dbf11c1
+    xG = 0x4ad5f7048de709ad51236de65e4d4b482c836dc6e4106640
+    yG = 0x02bb3a02d4aaadacae24817a4ca3a1b014b5270432db27d2
+    n = 0xbdb6f4fe3e8b1d9e0da8c0d40fc962195dfae76f56564677 
     h = 1
 
 class SWP256CCAO01( SmallWeierstrassCurveFp ):
@@ -230,18 +243,18 @@ class SECP_384r1( SmallWeierstrassCurveFp ):
     curveId = 'secp384r1'
     strength = 192
     # { iso(1) identified-organization(3) certicom(132) curve(0) 34 }
-    oid = (1, 3, 132, 0, 34) 
+    oid = (1,3,132,0,34) 
     # p = 2**384 - 2**128 - 2**96 + 2**32 - 1 
     p = 39402006196394479212279040100143613805079739270465446667948293404245721771496870329047266088258938001861606973112319
-    a = p-3  # all NIST mod p curves use a = -3 , note  -3 % p = (p-3)
+    a = p - 3  
     b = 0xb3312fa7e23ee7e4988e056be3f82d19181d9c6efe8141120314088f5013875ac656398d8a2ed19d2a85c8edd3ec2aef
-    
-    seed = 0xa335926aa319a27a1d00896a6773a4827acdac73
-    seed_c = 0x79d1e655f868f02fff48dcdee14151ddb80643c1406d0ca10dfe6fc52009540a495e8042ea5f744f6e184667cc722483
     xG = 0xaa87ca22be8b05378eb1c71ef320ad746e1d3b628ba79b9859f741e082542a385502f25dbf55296c3a545e3872760ab7
     yG = 0x3617de4a96262c6f5d9e98bf9292dc29f8f41dbd289a147ce9da3113b5f0b8c00a60b1ce1d7e819d7a431d7c90ea0e5f
     n = 39402006196394479212279040100143613805079739270465446667946905279627659399113263569398956308152294913554433653942643
     h = 1
+    
+    seed = 0xa335926aa319a27a1d00896a6773a4827acdac73
+    seed_c = 0x79d1e655f868f02fff48dcdee14151ddb80643c1406d0ca10dfe6fc52009540a495e8042ea5f744f6e184667cc722483
     
 class NIST_P384(SECP_384r1): # NIST renamed secp384r1
     curveId = 'nistP384'
@@ -249,18 +262,18 @@ class NIST_P384(SECP_384r1): # NIST renamed secp384r1
 class SECP_521r1( SmallWeierstrassCurveFp ):
     curveId = 'secp256r1'
     strength = 256
-    oid = (1, 3, 132, 0, 35) # {iso(1) identified-organization(3) certicom(132) curve(0) 35}
+    oid = (1,3,132,0,35)  # {iso(1) identified-organization(3) certicom(132) curve(0) 35}
     # p = 2**251 - 1   #  a Mersenne prime
     p = 0x1ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-    a = p-3  # all SECP mod p curves use a = -3 , note  -3 % p = (p-3)
-    # this seed was selected to create a usable 'b'  
-    seed = 0xd09e8800291cb85396cc6717393284aaa0da64ba 
-    seed_c = 0x0b48bfa5f420a34949539d2bdfc264eeeeb077688e44fbf0ad8f6d0edb37bd6b533281000518e19f1b9ffbe0fe9ed8a3c2200b8f875e523868c70c1e5bf55bad637
+    a = p - 3  
     b  = 0x051953eb9618e1c9a1f929a21a0b68540eea2da725b99b315f3b8b489918ef109e156193951ec7e937b1652c0bd3bb1bf073573df883d2c34f1ef451fd46b503f00
     n  = 0x1fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffa51868783bf2f966b7fcc0148f709a5d03bb5c9b8899c47aebb6fb71e91386409
     xG = 0x0c6858e06b70404e9cd9e3ecb662395b4429c648139053fb521f828af606b4d3dbaa14b5e77efe75928fe1dc127a2ffa8de3348b3c1856a429bf97e7e31c2e5bd66
     yG = 0x11839296a789a3bc0045c8a5fb42c7d1bd998f54449579b446817afbd17273e662c97ee72995ef42640c550b9013fad0761353c7086a272c24088be94769fd16650
     h = 1
+ 
+    seed = 0xd09e8800291cb85396cc6717393284aaa0da64ba 
+    seed_c = 0x0b48bfa5f420a34949539d2bdfc264eeeeb077688e44fbf0ad8f6d0edb37bd6b533281000518e19f1b9ffbe0fe9ed8a3c2200b8f875e523868c70c1e5bf55bad637
 
 class NIST_P521(SECP_521r1):
     curveId = 'nistP521'
@@ -270,42 +283,45 @@ class NIST_P521(SECP_521r1):
     http://www.ecc-brainpool.org/download/Domain-parameters.pdf
 """
 
-
 def brainPoolRequirements( curve ):
-    """ Brainpool cryptographic requirements on the defined curves """
+    """ Brainpool cryptographic requirements on the defined curves
+        Not complete yet ... move to tests
+    """
     a = curve.a;  b = curve.b;  p = curve.p
     assert  p > 3
-    assert  prime( p )
+    assert p % 4 == 3   # The prime number p shall be congruent 3 mod 4
+    assert prime( p )
     assert (4*a**3 + 27*b**2) % p != 0
 
 class BrainPoolP160r1( SmallWeierstrassCurveFp ):
     curveId = 'brainpoolP160r1'
     strength = 80
     oid = (1,3,36,3,2,8,1,1,1)
-    # ECC curve paramebters for y**2 = x**3 + a*x + b mod p
     p  = 0xE95E4A5F737059DC60DFC7AD95B3D8139515620F
-    # The prime number p shall be congruent 3 mod 4
-    assert p % 4 == 3
     a  = 0x340E7BE2A280EB74E2BE61BADA745D97E8F7C300
     b  = 0x1E589A8595423412134FAA2DBDEC95C8D8675E58
-    #  Generator point coordinate (x,y), order n and cofactor h
     xG = 0xBED5AF16EA3F6A4F62938C4631EB5AF7BDBCDBC3
     yG = 0x1667CB477A1A8EC338F94741669C976316DA6321
     n  = 0xE95E4A5F737059DC60DF5991D45029409E60FC09
     h  = 1
+    
+    # Seed_p_160 
+    seed = 0x3243F6A8885A308D313198A2E03707344A409382
 
 class BrainPoolP160t1( SmallWeierstrassCurveFp ):
     curveId = 'brainpoolP160t1'    # Twisted version of brainpoolP160r1
     strength = 80
     oid = (1,3,36,3,2,8,1,1,2)
     p  = 0xE95E4A5F737059DC60DFC7AD95B3D8139515620F
-    z  = 0x24DBFF5DEC9B986BBFE5295A29BFBAE45E0F5D0B # z exists only for twisted curves
-    a  = p-3 # for twistd curve
+    a  = p - 3 # for twistd Brainpool curve
     b  = 0x7A556B6DAE535B7B51ED2C4D7DAA7A0B5C55F380
     xG = 0xB199B13B9B34EFC1397E64BAEB05ACC265FF2378
     yG = 0xADD6718B7C7C1961F0991B842443772152C9E0AD
     n  = 0xE95E4A5F737059DC60DF5991D45029409E60FC09
     h  = 1
+    
+    # z used only for twisted Branpool curves
+    z  = 0x24DBFF5DEC9B986BBFE5295A29BFBAE45E0F5D0B 
 
 class BrainPoolP192r1( SmallWeierstrassCurveFp ):
     curveId = 'brainpoolP192r1'
@@ -325,7 +341,7 @@ class BrainPoolP192t1( SmallWeierstrassCurveFp ):
     oid = (1,3,36,3,2,8,1,1,4)
     p  = 0xC302F41D932A36CDA7A3463093D18DB78FCE476DE1A86297
     z  = 0x1B6F5CC8DB4DC7AF19458A9CB80DC2295E5EB9C3732104CB # z exists only for twisted curves
-    a  = 0xC302F41D932A36CDA7A3463093D18DB78FCE476DE1A86294 # twisted so a = p-3
+    a  = p - 3 # twisted so a = p-3
     b  = 0x13D56FFAEC78681E68F9DEB43B35BEC2FB68542E27897B79
     xG = 0x3AE9E58C82F63C30282E1FE7BBF43FA72C446AF6F4618129
     yG = 0x097E2C5667C2223A902AB5CA449D0084B7E5B3DE7CCC01C9
@@ -350,7 +366,7 @@ class BrainPoolP224t1( SmallWeierstrassCurveFp ):
     oid = (1,3,36,3,2,8,1,1,6)
     p  = 0xD7C134AA264366862A18302575D1D787B09F075797DA89F57EC8C0FF
     z  = 0x2DF271E14427A346910CF7A2E6CFA7B3F484E5C2CCE1C8B730E28B3F
-    a  = 0xD7C134AA264366862A18302575D1D787B09F075797DA89F57EC8C0FC # twisted so a = p-3
+    a  = p - 3 # twisted so a = p-3
     b  = 0x4B337D934104CD7BEF271BF60CED1ED20DA14C08B3BB64F18A60888D
     xG = 0x6AB1E344CE25FF3896424E7FFE14762ECB49F8928AC0C76029B4D580
     yG = 0x0374E9F5143E568CD23F3F4D7C0D4B1E41C8CC0D1C6ABD5F1A46DB4C
@@ -541,90 +557,4 @@ class E521( EdwardsCurveFp ):
     h  = 4
 
 
-def get_all_classes():
-    """ Python introspection return name and reference to all classes in module """
-    return inspect.getmembers( sys.modules[__name__],
-                lambda member: inspect.isclass(member) and
-                member.__module__ == __name__)
-    
-secpCurves = [SECP_192r1, SECP_224r1, SECP_256k1, SECP_256r1, SECP_384r1, SECP_521r1]  
-nistCurves = [NIST_P192,  NIST_P224, NIST_P256,  NIST_P384,  NIST_P521]
-brainPoolCurves = [BrainPoolP160r1, BrainPoolP192r1, BrainPoolP224r1, BrainPoolP256r1, BrainPoolP320r1, BrainPoolP384r1, BrainPoolP512r1, \
-                   BrainPoolP160t1, BrainPoolP192t1, BrainPoolP224t1, BrainPoolP256t1, BrainPoolP320t1, BrainPoolP384t1, BrainPoolP512t1]
-edwardsCurves = [E382, Curve3617, E521]
-montgomeryCurves = [Curve25519, M383, MontgomeryCurveFp]
-wierstrassCurves = nistCurves + brainPoolCurves + secpCurves + [SWP256CCAO01, SWP256GOST01, FRP256v1]
-allCurves = wierstrassCurves + edwardsCurves + montgomeryCurves
-
-""" Boneyard of unused SECP curves - OIDs assigned, need to find parameters"""
-class SECP_112r1( SmallWeierstrassCurveFp ):
-    curveId = 'secp112r1'
-    oid = (1, 3, 132, 0, 6)
-    
-class SECP_112r2( SmallWeierstrassCurveFp ):
-    curveId = 'secp112r2'
-    oid = (1, 3, 132, 0, 7)
-    
-class SECP_128r1( SmallWeierstrassCurveFp ):
-    curveId = 'secp128r1'
-    oid = (1, 3, 132, 0, 28)
-    
-class SECP_128r2( SmallWeierstrassCurveFp ):
-    curveId = 'secp128r2'
-    oid = (1, 3, 132, 0, 29)
-    
-class SECP_160k1( SmallWeierstrassCurveFp ):
-    curveId = 'secp160k1'
-    oid = (1, 3, 132, 0, 9)
-    
-class SECP_160r1( SmallWeierstrassCurveFp ):
-    curveId = 'secp160r1'
-    oid = (1, 3, 132, 0, 8)
-    
-class SECP_160r2( SmallWeierstrassCurveFp ):
-    curveId = 'secp160r2'
-    oid = (1, 3, 132, 0, 30)
-    
-class SECP_163k1( SmallWeierstrassCurveFp ):
-    curveId = 'sect163k1'
-    oid = (1, 3, 132, 0, 1)
-    
-class SECP_192k1( SmallWeierstrassCurveFp ):
-    curveId = 'secp192k1'
-    oid = (1, 3, 132, 0, 31)
-    
-class SECP_233k1( SmallWeierstrassCurveFp ):
-    curveId = 'sect233k1'
-    oid = (1, 3, 132, 0, 26)
-    
-class SECP_233r1( SmallWeierstrassCurveFp ):
-    curveId = 'sect233r1'
-    oid = (1, 3, 132, 0, 27)
-    
-class SECP_224k1( SmallWeierstrassCurveFp ):
-    curveId = 'secp224k1'
-    oid = (1, 3, 132, 0, 32)
-class SECP_283k1( SmallWeierstrassCurveFp ):
-    curveId = 'sect283k1'
-    oid = (1, 3, 132, 0, 16)
-    
-class SECP_283r1( SmallWeierstrassCurveFp ):
-    curveId = 'sect283r1'
-    oid = (1, 3, 132, 0, 17)
-    
-class SECP_409k1( SmallWeierstrassCurveFp ):
-    curveId = 'sect409k1'
-    oid = (1, 3, 132, 0, 36)
-    
-class SECP_409r1( SmallWeierstrassCurveFp ):
-    curveId = 'sect409r1'
-    oid = (1, 3, 132, 0, 37)
-    
-class SECP_571k1( SmallWeierstrassCurveFp ):
-    curveId = 'sect571k1'
-    oid = (1, 3, 132, 0, 38)
-    
-class SECP_571r1( SmallWeierstrassCurveFp ):
-    curveId = 'sect571r1'
-    oid = (1, 3, 132, 0, 39)
 
