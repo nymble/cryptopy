@@ -41,19 +41,26 @@ pi_ascii = ''.join( [ l.strip() for l in pi1k.splitlines()  ] ) # ascii pi
 # represent pi as a long fraction to maintain digit accuracy
 num_digits = len(pi_ascii) -2  # ignore the '3.' and count other digits
 pi = 3 + Fraction( int(pi_ascii[2:]), 10**num_digits)
-print pi
 
-def brainpool_seeds():
-    """ Return a list of 7 numeric seed values based on pi"""
-    pi = ''.join( [ l.strip() for l in pi1k.splitlines()  ] ) # ascii pi
+
+def brainpool_seeds(num_seeds=7, seed_bits=160):
+    """ Return a list of 7 numeric seed values based on pi
+        Each seed is 160 bits
+    """
+    bits = num_seeds*seed_bits  # bits needed for seeds
+    if not ( pi.denominator >  2**bits ):
+        raise "Not enough digits of pi available for seed processing"
     
-    pi_10E1000 = int('3'+pi[2:])  # 1001 digits of pi as an integer * 10E1000
+    seed_octets, seed_remainder = divmod(seed_bits, 8)
+    if seed_remainder:
+        raise "Seed size in bits must be a multiple of 8"
     
-    pi_seed = ( pi_10E1000 * 2**(7*160) ) / 10**1000
-    hex_seed_string = hex(pi_seed)[2:1002]   # hex ascii string
-    
-    # There are 40 ascii hex characters for each of the 160 bit values
-    seed_list = [ int(hex_seed_string[i*40:i*40+40], 16) for i in range(7) ]
+    pi_seed = long( pi * 2**bits ) 
+    hex_seed_string = hex(pi_seed)[2:1002]  # hex ascii string removing the '0x'
+
+    # Break up hex into octet strings for seeds
+    seed_list = [ int(hex_seed_string[i*seed_octets*2:(i+1)*seed_octets*2], 16)
+                 for i in range(num_seeds) ]
     return seed_list    
 
 if __name__ == '__main__':
