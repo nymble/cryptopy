@@ -37,7 +37,7 @@
     yG - the y-coordinate of a generator point G for the curve
     n  - the order of the generator point G
     h - the cofactor of the curve
-    seed - used for some random curves to demonstrate the provenance of
+    seed - used for some curves to demonstrate the provenance of
            the curve parameters and included for reference when available
 
   Each curve type has the following equations and parameters
@@ -45,19 +45,19 @@
     Small Wierstrass     y**2 == x**3 + a*x + b  mod p     
       a - often set to p-3 for efficiency        
       b - selected for the security properties of the curve shape
-      z - used by 'twisted' Brainpool curves for isogenous transform
-          of untwisted curve to a curve with a = p-3
+      z - used by 'twisted' Brainpool curves to show provenance of the
+          isogenous transform of untwisted curve to a curve with a = p-3
   
-    Small Wierstrass      y**2 == x**3 + a*x + b  mod p     
-      a - often set to p-3 for efficiency        
+    Koblitz               y**2 == x**3 + b  mod p
+      A Koblitz curve is a Small Wierstrass curve with a = 0
       b - selected for the security properties of the curve shape
-      z - used by 'twisted' Brainpool curves for isogenous transform
-          of untwisted curve to a curve with a = p-3
 
-    Koblitz               y**2 == x**3 + b  mod p           
-      b - selected for the security properties of the curve shape
-          
-    Edwards              x**2 + y**2 == c*(1 + d*x**2 * y**2) mod p    
+    Twisted Edwards      a*x**2 + y**2 == 1 + d*x**2 * y**2 mod p    
+      a - selected for the security properties of the curve shape           
+      d - selected for the security properties of the curve shape
+      
+    Edwards              x**2 + y**2 == c*(1 + d*x**2 * y**2) mod p
+      A Edwards curve is a Twisted Edwards curve with a=0 and c=1 
       c - typically set to 1 so the equation is reduced to:
                          x**2 + y**2 == 1 + d*x**2 * y**2  mod p               
       d - selected for the security properties of the curve shape  
@@ -78,12 +78,7 @@ class SECP_192r1( SmallWeierstrassCurveFp ):
     # p = 2**192 - 2**64 - 1
     p = 0xfffffffffffffffffffffffffffffffeffffffffffffffff
     a = p-3  # all NIST mod p curves use a = -3 , note  -3 % p = (p-3)
-
     b = 0x64210519e59c80e70fa7e9ab72243049feb8deecc146b9b1
-    # Generator point coordinate (x,y), order n and cofactor h
-    # Any point G=(x,y) can serve as base point. User may generate their own
-    # to ensure cryptographic separation of networks.
-
     xG = 0x188da80eb03090f67cbf20eb43a18800f4ff0afd82ff1012
     yG = 0x07192b95ffc8da78631011ed6b24cdd573f977a11e794811
     n = 6277101735386680763835789423176059013767194773182842284081
@@ -91,7 +86,7 @@ class SECP_192r1( SmallWeierstrassCurveFp ):
 
     seed = 0x3045ae6fc8422f64ed579528d38120eae12196d5  # unknown provenance
     seed_c = 0x3099d2bbbfcb2538542dcd5fb078b6ef5f3d6fe2c745de65L
-    # NIST validation of parameters
+    # NIST validation of parameters selected
     # assert seed_c == SHA1(seed)
     # assert (seed_c*b**2 + 27) % p == 0
 
@@ -134,7 +129,7 @@ class SECP_256k1( KoblitzCurveFp ):
     h  = 1
     
 class SECP_256r1( SmallWeierstrassCurveFp ):
-    """ Commonly used NIST/SECP curve """
+    """ Commonly used NIST/SECP curve included in Suite B """
     curveId ='secp256r1'
     strength = 128
     # {iso(1) member-body(2) us(840) ansi-X9-62(10045) curves(3) prime(1) 7}
@@ -157,7 +152,7 @@ class NIST_P256(SECP_256r1): # NIST renamed secp256r1
 class WAPI( SmallWeierstrassCurveFp ):
     """ Chinese Commercial Cryptography Administration Curve
         Documented in WAPI spec.  another may be in implementations
-        oid = (1, 2, 156, 11235, 1, 1, 1, 2, 1)  # implementations?
+        oid = (1, 2, 156, 11235, 1, 1, 1, 2, 1)  # ??implementations?
     """
     curveId = 'wapi'
     strength = 96
@@ -225,11 +220,11 @@ class SWP256GOST01( SmallWeierstrassCurveFp ):
     
 class FRP256v1( SmallWeierstrassCurveFp ):
     """ French National Agency for the Security of Information Systems 2009 
-      http://www.legifrance.gouv.fr/affichTexte.do?cidTexte=JORFTEXT000024668816
+        http://www.legifrance.gouv.fr/affichTexte.do?cidTexte=JORFTEXT000024668816
     """
     curveId ='frp256v1'
     strength = 128
-    oid = (1, 2, 250, 1, 223, 101, 256, 1)
+    oid = (1,2,250,1,223,101,256,1)
     p = 0xF1FD178C0B3AD58F10126DE8CE42435B3961ADBCABC8CA6DE8FCF353D86E9C03
     a = p-3
     b = 0xEE353FCA5428A9300D4ABA754A44C00FDFEC0C9AE4B1A1803075ED967B7BB73F
@@ -242,8 +237,7 @@ class FRP256v1( SmallWeierstrassCurveFp ):
 class SECP_384r1( SmallWeierstrassCurveFp ):
     curveId = 'secp384r1'
     strength = 192
-    # { iso(1) identified-organization(3) certicom(132) curve(0) 34 }
-    oid = (1,3,132,0,34) 
+    oid = (1,3,132,0,34) # { iso(1) identified-organization(3) certicom(132) curve(0) 34 }
     # p = 2**384 - 2**128 - 2**96 + 2**32 - 1 
     p = 39402006196394479212279040100143613805079739270465446667948293404245721771496870329047266088258938001861606973112319
     a = p - 3  
@@ -260,6 +254,7 @@ class NIST_P384(SECP_384r1): # NIST renamed secp384r1
     curveId = 'nistP384'
   
 class SECP_521r1( SmallWeierstrassCurveFp ):
+    """ Suite B curve for 256 bit security """
     curveId = 'secp256r1'
     strength = 256
     oid = (1,3,132,0,35)  # {iso(1) identified-organization(3) certicom(132) curve(0) 35}
@@ -283,16 +278,6 @@ class NIST_P521(SECP_521r1):
     http://www.ecc-brainpool.org/download/Domain-parameters.pdf
 """
 
-def brainPoolRequirements( curve ):
-    """ Brainpool cryptographic requirements on the defined curves
-        Not complete yet ... move to tests
-    """
-    a = curve.a;  b = curve.b;  p = curve.p
-    assert  p > 3
-    assert p % 4 == 3   # The prime number p shall be congruent 3 mod 4
-    assert prime( p )
-    assert (4*a**3 + 27*b**2) % p != 0
-
 class BrainPoolP160r1( SmallWeierstrassCurveFp ):
     curveId = 'brainpoolP160r1'
     strength = 80
@@ -306,21 +291,22 @@ class BrainPoolP160r1( SmallWeierstrassCurveFp ):
     h  = 1
     
     # Seed_p_160
-    seed = 0x3243F6A8885A308D313198A2E03707344A409382
+    seed_p = 0x3243F6A8885A308D313198A2E03707344A409382
 
 class BrainPoolP160t1( SmallWeierstrassCurveFp ):
     curveId = 'brainpoolP160t1'    # Twisted version of brainpoolP160r1
     strength = 80
     oid = (1,3,36,3,2,8,1,1,2)
     p  = 0xE95E4A5F737059DC60DFC7AD95B3D8139515620F
-    a  = p - 3 # for twistd Brainpool curve
+    a  = p - 3 # for twistd version of brainpoolP160r1 Brainpool curve
     b  = 0x7A556B6DAE535B7B51ED2C4D7DAA7A0B5C55F380
     xG = 0xB199B13B9B34EFC1397E64BAEB05ACC265FF2378
     yG = 0xADD6718B7C7C1961F0991B842443772152C9E0AD
     n  = 0xE95E4A5F737059DC60DF5991D45029409E60FC09
     h  = 1
     
-    # z used only for twisted Branpool curves
+    # z exists only for Brainpool twisted curves to show
+    # transformation from random curve
     z  = 0x24DBFF5DEC9B986BBFE5295A29BFBAE45E0F5D0B 
 
 class BrainPoolP192r1( SmallWeierstrassCurveFp ):
@@ -334,19 +320,22 @@ class BrainPoolP192r1( SmallWeierstrassCurveFp ):
     yG = 0x14B690866ABD5BB88B5F4828C1490002E6773FA2FA299B8F
     n  = 0xC302F41D932A36CDA7A3462F9E9E916B5BE8F1029AC4ACC1
     h  = 1
+    
+    seed_p = 0x2299F31D0082EFA98EC4E6C89452821E638D0137  # Seed_p_192
 
 class BrainPoolP192t1( SmallWeierstrassCurveFp ):
-    curveId = 'brainpoolP192t1'    # Twisted 
+    curveId = 'brainpoolP192t1'    # Twisted version of brainpoolP192r1
     strength = 96
     oid = (1,3,36,3,2,8,1,1,4)
     p  = 0xC302F41D932A36CDA7A3463093D18DB78FCE476DE1A86297
-    z  = 0x1B6F5CC8DB4DC7AF19458A9CB80DC2295E5EB9C3732104CB # z exists only for twisted curves
-    a  = p - 3 # twisted so a = p-3
+    a  = p - 3 # twisted version of brainpoolP192r1 so a = p-3
     b  = 0x13D56FFAEC78681E68F9DEB43B35BEC2FB68542E27897B79
     xG = 0x3AE9E58C82F63C30282E1FE7BBF43FA72C446AF6F4618129
     yG = 0x097E2C5667C2223A902AB5CA449D0084B7E5B3DE7CCC01C9
     n  = 0xC302F41D932A36CDA7A3462F9E9E916B5BE8F1029AC4ACC1
     h  = 1
+
+    z  = 0x1B6F5CC8DB4DC7AF19458A9CB80DC2295E5EB9C3732104CB 
     
 class BrainPoolP224r1( SmallWeierstrassCurveFp ):
     curveId = 'brainpoolP224r1'
@@ -360,18 +349,21 @@ class BrainPoolP224r1( SmallWeierstrassCurveFp ):
     n  = 0xD7C134AA264366862A18302575D0FB98D116BC4B6DDEBCA3A5A7939F
     h  = 1
 
+    seed_p = 0x7BE5466CF34E90C6CC0AC29B7C97C50DD3F84D5B  # Seed_p_224
+
 class BrainPoolP224t1( SmallWeierstrassCurveFp ):
-    curveId = 'brainpoolP224t1'    # Twisted 
+    curveId = 'brainpoolP224t1'    # Twisted version of brainpoolP224r1
     strength = 112
     oid = (1,3,36,3,2,8,1,1,6)
     p  = 0xD7C134AA264366862A18302575D1D787B09F075797DA89F57EC8C0FF
-    z  = 0x2DF271E14427A346910CF7A2E6CFA7B3F484E5C2CCE1C8B730E28B3F
     a  = p - 3 # twisted version of brainpoolP224r1 so a = p-3
     b  = 0x4B337D934104CD7BEF271BF60CED1ED20DA14C08B3BB64F18A60888D
     xG = 0x6AB1E344CE25FF3896424E7FFE14762ECB49F8928AC0C76029B4D580
     yG = 0x0374E9F5143E568CD23F3F4D7C0D4B1E41C8CC0D1C6ABD5F1A46DB4C
     n  = 0xD7C134AA264366862A18302575D0FB98D116BC4B6DDEBCA3A5A7939F
     h  = 1
+
+    z  = 0x2DF271E14427A346910CF7A2E6CFA7B3F484E5C2CCE1C8B730E28B3F
 
 class BrainPoolP256r1( SmallWeierstrassCurveFp ):
     curveId = 'brainpoolP256r1'
@@ -385,18 +377,21 @@ class BrainPoolP256r1( SmallWeierstrassCurveFp ):
     n  = 0xA9FB57DBA1EEA9BC3E660A909D838D718C397AA3B561A6F7901E0E82974856A7
     h  = 1
 
+    seed_p = 0x5B54709179216D5D98979FB1BD1310BA698DFB5A  # Seed_p_256
+
 class BrainPoolP256t1( SmallWeierstrassCurveFp ):
     curveId = 'brainpoolP256t1'    # Twisted 
     strength = 128
     oid = (1,3,36,3,2,8,1,1,8)
     p  = 0xA9FB57DBA1EEA9BC3E660A909D838D726E3BF623D52620282013481D1F6E5377
-    z  = 0x3E2D4BD9597B58639AE7AA669CAB9837CF5CF20A2C852D10F655668DFC150EF0
-    a  = p - 3  # twisted version of brainpoolP384r1 so that a = p-3
+    a  = p - 3  # twisted version of brainpoolP256r1 so that a = p-3
     b  = 0x662C61C430D84EA4FE66A7733D0B76B7BF93EBC4AF2F49256AE58101FEE92B04
     xG = 0xA3E8EB3CC1CFE7B7732213B23A656149AFA142C47AAFBC2B79A191562E1305F4
     yG = 0x2D996C823439C56D7F7B22E14644417E69BCB6DE39D027001DABE8F35B25C9BE
     n  = 0xA9FB57DBA1EEA9BC3E660A909D838D718C397AA3B561A6F7901E0E82974856A7
     h  = 1
+
+    z  = 0x3E2D4BD9597B58639AE7AA669CAB9837CF5CF20A2C852D10F655668DFC150EF0
 
 class BrainPoolP320r1( SmallWeierstrassCurveFp ):
     curveId = 'brainpoolP320r1'
@@ -409,19 +404,22 @@ class BrainPoolP320r1( SmallWeierstrassCurveFp ):
     yG = 0x14FDD05545EC1CC8AB4093247F77275E0743FFED117182EAA9C77877AAAC6AC7D35245D1692E8EE1
     n  = 0xD35E472036BC4FB7E13C785ED201E065F98FCFA5B68F12A32D482EC7EE8658E98691555B44C59311
     h  = 1
+    
+    seed_p = 0xC2FFD72DBD01ADFB7B8E1AFED6A267E96BA7C904  # Seed_p_320
 
 class BrainPoolP320t1( SmallWeierstrassCurveFp ):
     curveId = 'brainpoolP320t1'    # 't' for Twisted 
     strength = 160
     oid = (1,3,36,3,2,8,1,1,10)
     p  = 0xD35E472036BC4FB7E13C785ED201E065F98FCFA6F6F40DEF4F92B9EC7893EC28FCD412B1F1B32E27
-    z  = 0x15F75CAF668077F7E85B42EB01F0A81FF56ECD6191D55CB82B7D861458A18FEFC3E5AB7496F3C7B1
-    a  = p - 3  # twisted version of brainpoolP384r1 so that a = p-3
+    a  = p - 3  # twisted version of brainpoolP320r1 so that a = p-3
     b  = 0xA7F561E038EB1ED560B3D147DB782013064C19F27ED27C6780AAF77FB8A547CEB5B4FEF422340353
     xG = 0x925BE9FB01AFC6FB4D3E7D4990010F813408AB106C4F09CB7EE07868CC136FFF3357F624A21BED52
     yG = 0x63BA3A7A27483EBF6671DBEF7ABB30EBEE084E58A0B077AD42A5A0989D1EE71B1B9BC0455FB0D2C3
     n  = 0xD35E472036BC4FB7E13C785ED201E065F98FCFA5B68F12A32D482EC7EE8658E98691555B44C59311
     h  = 1
+
+    z  = 0x15F75CAF668077F7E85B42EB01F0A81FF56ECD6191D55CB82B7D861458A18FEFC3E5AB7496F3C7B1
 
 class BrainPoolP384r1( SmallWeierstrassCurveFp ):  
     curveId = 'brainpoolP384r1'
@@ -435,18 +433,21 @@ class BrainPoolP384r1( SmallWeierstrassCurveFp ):
     n  = 0x8CB91E82A3386D280F5D6F7E50E641DF152F7109ED5456B31F166E6CAC0425A7CF3AB6AF6B7FC3103B883202E9046565
     h  = 1
 
+    seed_p = 0x5F12C7F9924A19947B3916CF70801F2E2858EFC1  # Seed_p_384
+
 class BrainPoolP384t1( SmallWeierstrassCurveFp ):  
     curveId = 'brainpoolP384t1'    # Twisted 
     strength = 192
     oid = (1,3,36,3,2,8,1,1,12)
     p  = 0x8CB91E82A3386D280F5D6F7E50E641DF152F7109ED5456B412B1DA197FB71123ACD3A729901D1A71874700133107EC53
-    z  = 0x41DFE8DD399331F7166A66076734A89CD0D2BCDB7D068E44E1F378F41ECBAE97D2D63DBC87BCCDDCCC5DA39E8589291C
     a  = p - 3  # twisted version of brainpoolP384r1 so that a = p-3
     b  = 0x7F519EADA7BDA81BD826DBA647910F8C4B9346ED8CCDC64E4B1ABD11756DCE1D2074AA263B88805CED70355A33B471EE
     xG = 0x18DE98B02DB9A306F2AFCD7235F72A819B80AB12EBD653172476FECD462AABFFC4FF191B946A5F54D8D0AA2F418808CC
     yG = 0x25AB056962D30651A114AFD2755AD336747F93475B7A1FCA3B88F2B6A208CCFE469408584DC2B2912675BF5B9E582928
     n  = 0x8CB91E82A3386D280F5D6F7E50E641DF152F7109ED5456B31F166E6CAC0425A7CF3AB6AF6B7FC3103B883202E9046565
     h  = 1
+    
+    z  = 0x41DFE8DD399331F7166A66076734A89CD0D2BCDB7D068E44E1F378F41ECBAE97D2D63DBC87BCCDDCCC5DA39E8589291C
    
 class BrainPoolP512r1( SmallWeierstrassCurveFp ):
     curveId = 'brainpoolP512r1'
@@ -460,6 +461,8 @@ class BrainPoolP512r1( SmallWeierstrassCurveFp ):
     n  = 0xAADD9DB8DBE9C48B3FD4E6AE33C9FC07CB308DB3B3C9D20ED6639CCA70330870553E5C414CA92619418661197FAC10471DB1D381085DDADDB58796829CA90069
     h  = 1
 
+    seed_p = 0x6636920D871574E69A458FEA3F4933D7E0D95748  # Seed_p_512
+    
 class BrainPoolP512t1( SmallWeierstrassCurveFp ):
     curveId = 'brainpoolP512t1'
     strength = 256
@@ -473,6 +476,7 @@ class BrainPoolP512t1( SmallWeierstrassCurveFp ):
     h  = 1
     
     z  = 0x12EE58E6764838B69782136F0F2D3BA06E27695716054092E60A80BEDB212B64E585D90BCE13761F85C3F1D2A64E3BE8FEA2220F01EBA5EEB0F35DBD29D922AB
+
 
 """ Edwards and Montgomery curves """
 

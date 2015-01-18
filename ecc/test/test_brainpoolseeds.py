@@ -61,7 +61,18 @@ def brainpool_seeds(num_seeds=7, seed_bits=160):
     # Break up hex into octet strings for seeds
     seed_list = [ int(hex_seed_string[i*seed_octets*2:(i+1)*seed_octets*2], 16)
                  for i in range(num_seeds) ]
-    return seed_list    
+    return seed_list
+
+def brainPoolRequirements( curve ):
+    """ Brainpool cryptographic requirements on the defined curves
+        Not complete yet ... move to tests
+    """
+    a = curve.a;  b = curve.b;  p = curve.p
+    assert  p > 3
+    assert p % 4 == 3   # The prime number p shall be congruent 3 mod 4
+    assert prime( p )
+    assert (4*a**3 + 27*b**2) % p != 0
+    
 
 if __name__ == '__main__':
     
