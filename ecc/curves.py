@@ -90,8 +90,10 @@ class SECP_192r1( SmallWeierstrassCurveFp ):
     # assert seed_c == SHA1(seed)
     # assert (seed_c*b**2 + 27) % p == 0
 
+
 class NIST_P192(SECP_192r1):  # NIST renamed secp192r1
     curveId = 'nistP192'
+
 
 class SECP_224r1( SmallWeierstrassCurveFp ):
     curveId = 'secp224r1'
@@ -110,8 +112,10 @@ class SECP_224r1( SmallWeierstrassCurveFp ):
     seed = 0xbd71344799d5c7fcdc45b59fa3b9ab8f6a948bc5
     seed_c = 0x5b056c7e11dd68f40469ee7f3c7a7d74f7d121116506d031218291fb
 
+
 class NIST_P224( SECP_224r1 ):  # NIST renamed Secp224r1
     curveId = 'nistP224'
+
 
 class SECP_256k1( KoblitzCurveFp ):
     """ Certicom secp256-k1 curve - used in Bitcoin, not used by NIST
@@ -127,6 +131,7 @@ class SECP_256k1( KoblitzCurveFp ):
     yG = 0x483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8
     n  = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141
     h  = 1
+   
     
 class SECP_256r1( SmallWeierstrassCurveFp ):
     """ Commonly used NIST/SECP curve included in Suite B """
@@ -145,9 +150,11 @@ class SECP_256r1( SmallWeierstrassCurveFp ):
        
     seed = 0xc49d360886e704936a6678e1139d26b7819f7e90
     seed_c = 0x7efba1662985be9403cb055c75d4f7e0ce8d84a9c5114abcaf3177680104fa0d
+ 
     
 class NIST_P256(SECP_256r1): # NIST renamed secp256r1
     curveId = 'nistP256'
+
 
 class WAPI( SmallWeierstrassCurveFp ):
     """ Chinese Commercial Cryptography Administration Curve
@@ -164,6 +171,7 @@ class WAPI( SmallWeierstrassCurveFp ):
     yG = 0x02bb3a02d4aaadacae24817a4ca3a1b014b5270432db27d2
     n = 0xbdb6f4fe3e8b1d9e0da8c0d40fc962195dfae76f56564677 
     h = 1
+
 
 class SWP256CCAO01( SmallWeierstrassCurveFp ):
     """ Chinese Commercial Cryptography Administration Office
@@ -182,6 +190,7 @@ class SWP256CCAO01( SmallWeierstrassCurveFp ):
     yG = 0x0680512BCBB42C07D47349D2153B70C4E5D7FDFCBFA36EA1A85841B9E46E09A2
     n = 0x8542D69E4C044F18E8B92435BF6FF7DD297720630485628D5AE74EE7C32E79B7
 
+
 class SWP256SM2( SmallWeierstrassCurveFp ):
     """ Chinese Commercial Cryptography Administration Office
         State Public Key Cryptographic Algorithm SM2
@@ -199,6 +208,7 @@ class SWP256SM2( SmallWeierstrassCurveFp ):
     yG = 0xBC3736A2F4F6779C59BDCEE36B692153D0A9877CC62A474002DF32E52139F0A0
     n = 0xFFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFF7203DF6B21C6052B53BBF40939D54123
     h = 1
+
 
 class SWP256GOST01( SmallWeierstrassCurveFp ):
     """ Russian GOST curve GOST R 34.10-2012 
@@ -249,9 +259,11 @@ class SECP_384r1( SmallWeierstrassCurveFp ):
     
     seed = 0xa335926aa319a27a1d00896a6773a4827acdac73
     seed_c = 0x79d1e655f868f02fff48dcdee14151ddb80643c1406d0ca10dfe6fc52009540a495e8042ea5f744f6e184667cc722483
+   
     
 class NIST_P384(SECP_384r1): # NIST renamed secp384r1
     curveId = 'nistP384'
+  
   
 class SECP_521r1( SmallWeierstrassCurveFp ):
     """ Suite B curve for 256 bit security """
@@ -269,6 +281,7 @@ class SECP_521r1( SmallWeierstrassCurveFp ):
  
     seed = 0xd09e8800291cb85396cc6717393284aaa0da64ba 
     seed_c = 0x0b48bfa5f420a34949539d2bdfc264eeeeb077688e44fbf0ad8f6d0edb37bd6b533281000518e19f1b9ffbe0fe9ed8a3c2200b8f875e523868c70c1e5bf55bad637
+
 
 class NIST_P521(SECP_521r1):
     curveId = 'nistP521'
@@ -290,8 +303,9 @@ class BrainPoolP160r1( SmallWeierstrassCurveFp ):
     n  = 0xE95E4A5F737059DC60DF5991D45029409E60FC09
     h  = 1
     
-    # Seed_p_160
-    seed_p = 0x3243F6A8885A308D313198A2E03707344A409382
+    seed_p = 0x3243F6A8885A308D313198A2E03707344A409382  # Seed_p_160
+    seed_ab = 0x2B7E151628AED2A6ABF7158809CF4F3C762E7160  # Seed_ab_160
+
 
 class BrainPoolP160t1( SmallWeierstrassCurveFp ):
     curveId = 'brainpoolP160t1'    # Twisted version of brainpoolP160r1
@@ -309,6 +323,7 @@ class BrainPoolP160t1( SmallWeierstrassCurveFp ):
     # transformation from random curve
     z  = 0x24DBFF5DEC9B986BBFE5295A29BFBAE45E0F5D0B 
 
+
 class BrainPoolP192r1( SmallWeierstrassCurveFp ):
     curveId = 'brainpoolP192r1'
     strength = 96
@@ -321,7 +336,9 @@ class BrainPoolP192r1( SmallWeierstrassCurveFp ):
     n  = 0xC302F41D932A36CDA7A3462F9E9E916B5BE8F1029AC4ACC1
     h  = 1
     
-    seed_p = 0x2299F31D0082EFA98EC4E6C89452821E638D0137  # Seed_p_192
+    seed_p = 0x2299F31D0082EFA98EC4E6C89452821E638D0137  # Seed_p_192 
+    seed_ab = 0xF38B4DA56A784D9045190CFEF324E7738926CFBE  # Seed_ab_192 
+
 
 class BrainPoolP192t1( SmallWeierstrassCurveFp ):
     curveId = 'brainpoolP192t1'    # Twisted version of brainpoolP192r1
@@ -337,6 +354,7 @@ class BrainPoolP192t1( SmallWeierstrassCurveFp ):
 
     z  = 0x1B6F5CC8DB4DC7AF19458A9CB80DC2295E5EB9C3732104CB 
     
+    
 class BrainPoolP224r1( SmallWeierstrassCurveFp ):
     curveId = 'brainpoolP224r1'
     strength = 112
@@ -350,6 +368,8 @@ class BrainPoolP224r1( SmallWeierstrassCurveFp ):
     h  = 1
 
     seed_p = 0x7BE5466CF34E90C6CC0AC29B7C97C50DD3F84D5B  # Seed_p_224
+    seed_ab = 0x5F4BF8D8D8C31D763DA06C80ABB1185EB4F7C7B5  # Seed_ab_224
+
 
 class BrainPoolP224t1( SmallWeierstrassCurveFp ):
     curveId = 'brainpoolP224t1'    # Twisted version of brainpoolP224r1
@@ -365,6 +385,7 @@ class BrainPoolP224t1( SmallWeierstrassCurveFp ):
 
     z  = 0x2DF271E14427A346910CF7A2E6CFA7B3F484E5C2CCE1C8B730E28B3F
 
+
 class BrainPoolP256r1( SmallWeierstrassCurveFp ):
     curveId = 'brainpoolP256r1'
     strength = 128
@@ -378,6 +399,8 @@ class BrainPoolP256r1( SmallWeierstrassCurveFp ):
     h  = 1
 
     seed_p = 0x5B54709179216D5D98979FB1BD1310BA698DFB5A  # Seed_p_256
+    seed_ab = 0x757F5958490CFD47D7C19BB42158D9554F7B46BC  # Seed_ab_256
+
 
 class BrainPoolP256t1( SmallWeierstrassCurveFp ):
     curveId = 'brainpoolP256t1'    # Twisted 
@@ -393,6 +416,7 @@ class BrainPoolP256t1( SmallWeierstrassCurveFp ):
 
     z  = 0x3E2D4BD9597B58639AE7AA669CAB9837CF5CF20A2C852D10F655668DFC150EF0
 
+
 class BrainPoolP320r1( SmallWeierstrassCurveFp ):
     curveId = 'brainpoolP320r1'
     strength = 160
@@ -406,6 +430,8 @@ class BrainPoolP320r1( SmallWeierstrassCurveFp ):
     h  = 1
     
     seed_p = 0xC2FFD72DBD01ADFB7B8E1AFED6A267E96BA7C904  # Seed_p_320
+    seed_ab = 0xED55C4D79FD5F24D6613C31C3839A2DDF8A9A276  # Seed_ab_320
+
 
 class BrainPoolP320t1( SmallWeierstrassCurveFp ):
     curveId = 'brainpoolP320t1'    # 't' for Twisted 
@@ -421,6 +447,7 @@ class BrainPoolP320t1( SmallWeierstrassCurveFp ):
 
     z  = 0x15F75CAF668077F7E85B42EB01F0A81FF56ECD6191D55CB82B7D861458A18FEFC3E5AB7496F3C7B1
 
+
 class BrainPoolP384r1( SmallWeierstrassCurveFp ):  
     curveId = 'brainpoolP384r1'
     strength = 192
@@ -434,6 +461,8 @@ class BrainPoolP384r1( SmallWeierstrassCurveFp ):
     h  = 1
 
     seed_p = 0x5F12C7F9924A19947B3916CF70801F2E2858EFC1  # Seed_p_384
+    seed_ab = 0xBCFBFA1C877C56284DAB79CD4C2B3293D20E9E5E  # Seed_ab_384
+
 
 class BrainPoolP384t1( SmallWeierstrassCurveFp ):  
     curveId = 'brainpoolP384t1'    # Twisted 
@@ -449,6 +478,7 @@ class BrainPoolP384t1( SmallWeierstrassCurveFp ):
     
     z  = 0x41DFE8DD399331F7166A66076734A89CD0D2BCDB7D068E44E1F378F41ECBAE97D2D63DBC87BCCDDCCC5DA39E8589291C
    
+   
 class BrainPoolP512r1( SmallWeierstrassCurveFp ):
     curveId = 'brainpoolP512r1'
     strength = 256
@@ -462,6 +492,7 @@ class BrainPoolP512r1( SmallWeierstrassCurveFp ):
     h  = 1
 
     seed_p = 0x6636920D871574E69A458FEA3F4933D7E0D95748  # Seed_p_512
+    seed_ab = 0xAF02AC60ACC93ED874422A52ECB238FEEE5AB6AD  # Seed_ab_512
     
 class BrainPoolP512t1( SmallWeierstrassCurveFp ):
     curveId = 'brainpoolP512t1'
@@ -492,6 +523,7 @@ class Curve25519( MontgomeryCurveFp ):
     n  = 2**252 + 27742317777372353535851937790883648493 
     h  = 8
     
+    
 class Ed25519( EdwardsCurveFp ):
     """ (x**2 + y**2) % p == (1 + 121665/121666)*x**2 * y**2) % p """
     curveId = 'Ed25519'
@@ -505,6 +537,7 @@ class Ed25519( EdwardsCurveFp ):
     n  = 2**252 + 27742317777372353535851937790883648493 
     h  = 8     
        
+       
 class E382( EdwardsCurveFp ):
     """ x**2+y**2 == (1-67254*x**2*y**2) mod 2**382-105 """
     curveId = 'e382'
@@ -517,6 +550,7 @@ class E382( EdwardsCurveFp ):
     n  = 2**380 - 1030303207694556153926491950732314247062623204330168346855
     h  = 4
 
+
 class M383( MontgomeryCurveFp ):
     """ y**2 == x**3+2065150*x**2+x mod 2**383-187 """
     curveId = 'm383'
@@ -527,6 +561,7 @@ class M383( MontgomeryCurveFp ):
     yG = 0x1ec7ed04aaf834af310e304b2da0f328e7c165f0e8988abd3992861290f617aa1f1b2e7d0b6e332e969991b62555e77e
     n  = 2**380 + 166236275931373516105219794935542153308039234455761613271
     h  = 8
+
 
 class Curve3617( EdwardsCurveFp ):
     curveId = 'curve3617'
@@ -539,6 +574,7 @@ class Curve3617( EdwardsCurveFp ):
     n  = 2**411 - 33364140863755142520810177694098385178984727200411208589594759
     h  = 8
 
+
 class M511( MontgomeryCurveFp ):
     curveId = 'm511'
     strength = 254
@@ -548,6 +584,7 @@ class M511( MontgomeryCurveFp ):
     yG = 2500410645565072423368981149139213252211568685173608590070979264248275228603899706950518127817176591878667784247582124505430745177116625808811349787373477
     n  = 2**508 + 10724754759635747624044531514068121842070756627434833028965540808827675062043
     h  = 8
+
 
 class E521( EdwardsCurveFp ):
     """ x**2+y**2 = 1-376014*x**2*y**2  mod 2**521-1"""
