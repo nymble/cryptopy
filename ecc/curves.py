@@ -288,6 +288,8 @@ class NIST_P521(SECP_521r1):
 
 
 """ Brainpool Standard Curves and Curve Generation - RFC 5639, March 2010
+    BSI TR-03111, Elliptic Curve Cryptography vesion 2.0
+    https://www.bsi.bund.de/SharedDocs/Downloads/EN/BSI/Publications/TechGuidelines/TR03111/BSI-TR-03111_pdf.pdf
     http://www.ecc-brainpool.org/download/Domain-parameters.pdf
 """
 
