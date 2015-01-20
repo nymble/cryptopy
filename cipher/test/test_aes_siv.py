@@ -13,7 +13,6 @@ if __name__ == '__main__' and __package__ is None:
 else:
     from ..aes_siv import siv_encrypt, siv_decrypt
 
-
 """ Test Vectors from RFC 5297 """
 
 # A.1. Deterministic Authenticated Encryption Example

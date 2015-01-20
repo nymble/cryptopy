@@ -8,8 +8,8 @@ Refs: http://safecurves.cr.yp.to/index.html
       https://github.com/warner/python-ed25519/blob/master/kat.py
       Extension and repackaging of Peter Pearson's open source ECC
 
-20131201 .... refactorization
-2015  projections and new curve type changes
+20131201 refactored
+2015  projections and new curve type changes, midway in refactor .... 
 
 Paul A. Lambert 2015
 """
@@ -134,7 +134,6 @@ class SmallWeierstrassCurveFp( EllipticCurveFp ):
     """ A Small Wierstrass curve has points on:
             y^2 == x^3 + a*x^2+b  over  GF(p)
     """
-    IDENTITY = 
     def contains_point(curve, g):
         """Is the point 'g' on the Small Weierstrass curve"""
         p = curve.p;  a = curve.a;  b = curve.b;  x = g.x;  y = g.y
@@ -144,7 +143,7 @@ class SmallWeierstrassCurveFp( EllipticCurveFp ):
     def add_points(curve, p1, p2):
         """ Add one point to another point (from X9.62 B.3). """
         assert p1.curve == p2.curve    # points must be on the same curve
-
+        INFINITY = curve.identity()
         if p2 == INFINITY:
             return p1
         if p1 == INFINITY:
@@ -186,13 +185,14 @@ class SmallWeierstrassCurveFp( EllipticCurveFp ):
             return result / 2
     
         e = scalar
-        if point.n: e = e % point.n
+        # if point.n: e = e % point.n #?? if n=None??
+        e = e % point.curve.n
         if e == 0: return INFINITY
         if point == INFINITY: return INFINITY
         assert e > 0
     
         e3 = 3 * e
-        negative_self = curve.point( point.x, -point.y, point.n )
+        negative_self = curve.point( point.x, -point.y )
         i = leftmost_bit( e3 ) / 2
         result = point
         while i > 1:
@@ -206,7 +206,15 @@ class SmallWeierstrassCurveFp( EllipticCurveFp ):
     def identity(curve):
         """ The additive identity """
         return curve.point(None, None) # Special point at infinity
-             
+
+
+class KoblitzCurveFp( SmallWeierstrassCurveFp ):
+    """ A Koblitz curve is a SMall Weierstrass curve with a=0 :
+            y**2 == x**3 + b  over  GF(p)
+    """
+    a = 0
+    
+    
 class TwistedEdwardsCurveFp( EllipticCurveFp ):
     """ A Twisted Edwards curve has points on:
             (a*x**2 + y**2) % p == (1 + d*x**2*y**2) % p

@@ -68,7 +68,8 @@
     
     Paul A. Lambert, December 2013
 """
-from ecc import SmallWeierstrassCurveFp, EdwardsCurveFp, MontgomeryCurveFp 
+from ecc import SmallWeierstrassCurveFp, KoblitzCurveFp, EdwardsCurveFp, MontgomeryCurveFp
+import sys, inspect
 
 class SECP_192r1( SmallWeierstrassCurveFp ):
     curveId = 'secp192r1'
@@ -601,4 +602,32 @@ class E521( EdwardsCurveFp ):
     h  = 4
 
 
+# --- collect curves of same type ---
+def get_all_classes():
+    """ Python introspection return name and reference to all classes in module """
+    return inspect.getmembers( sys.modules[__name__],
+                lambda member: inspect.isclass(member) and
+                member.__module__ == __name__)
+    
+secpCurves = [SECP_192r1, SECP_224r1, SECP_256k1, SECP_256r1, SECP_384r1, SECP_521r1]  
+nistCurves = [NIST_P192,  NIST_P224, NIST_P256,  NIST_P384,  NIST_P521]
+brainPoolCurves = [BrainPoolP160r1, BrainPoolP192r1, BrainPoolP224r1, BrainPoolP256r1, BrainPoolP320r1, BrainPoolP384r1, BrainPoolP512r1, \
+                   BrainPoolP160t1, BrainPoolP192t1, BrainPoolP224t1, BrainPoolP256t1, BrainPoolP320t1, BrainPoolP384t1, BrainPoolP512t1]
+edwardsCurves = [E382, Curve3617, E521]
+montgomeryCurves = [Curve25519, M383, MontgomeryCurveFp]
+wierstrassCurves = nistCurves + brainPoolCurves + secpCurves + [SWP256CCAO01, SWP256GOST01, FRP256v1]
+allCurves = wierstrassCurves + edwardsCurves + montgomeryCurves
+"""
+clsmembers = inspect.getmembers( sys.modules[__name__],
+             lambda member: inspect.isclass(member) and
+             member.__module__ == __name__)
 
+smallWeierstrassCurves = []
+montgomeryCurves = []
+edwardsCurves = []
+
+for cname, c in clsmembers:
+    print cname, c.__bases__[0].__name__
+"""
+if __name__ == '__main__':
+    pass
