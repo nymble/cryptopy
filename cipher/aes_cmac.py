@@ -6,6 +6,8 @@
     Authentication", May 2005.
     http://csrc.nist.gov/publications/nistpubs/800-38B/SP_800-38B.pdf
     
+    RFC 4493 - http://www.rfc-editor.org/rfc/rfc4493.txt
+    
     Author: Paul A. Lambert, December 2013
 """
 from Crypto.Cipher import AES
