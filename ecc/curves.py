@@ -2,19 +2,19 @@
     
   Elliptic Curve Cryptography Parameter Definitions
   
-  Definitions Include:
+  Definitions Include Curves from:
     - SECP Fp Curves from SEC 2: Recommended Elliptic Curve Domain Parameters
     - NIST Fp Curves from FIPS PUB 186-4 (same as selected SECP curves)
     - Brainpool Curves from RFC 5639, March 2010
-    - Montogomery and Edwards curves from
-      http://www.hyperelliptic.org/EFD/g1p/index.html
     - Chinese Commercial Cryptography Administration Office Fp-256
-    - Russian Federal GOST R 34.10-2001
+    - Russian Federal GOST R 34.10-2001 and GOST R 34.10-2012
     - French National Agency for the Security of Information Systems FRP256v1
       http://www.legifrance.gouv.fr/affichTexte.do?cidTexte=JORFTEXT000024668816
+    - Montogomery and Edwards curves from
+      http://www.hyperelliptic.org/EFD/g1p/index.html
     
   These ECC definitions include four classes of curves defined over the field
-  of integers modulo a prime p.  Each class of curve has an equation and
+  of integers modulo a prime 'p'.  Each class of curve has an equation and
   assoicated parameters unique to the class type.  Four classes of curves
   are described:
     
@@ -124,7 +124,7 @@ class SECP_256k1( KoblitzCurveFp ):
     curveId = 'secp256k1'
     strength = 128
     # {iso(1) identified-organization(3) certicom(132) curve(0) 10}
-    oid = (1,3,132,0,10) 
+    oid = (1,3,132,0,10)
     # p = 2**256 - 2**32 - 2**29 - 2**28 - 2**7 - 2**26 - 2**24 - 1
     p  = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f
     b  = 7
@@ -181,7 +181,6 @@ class SWP256CCAO01( SmallWeierstrassCurveFp ):
         http://www.oscca.gov.cn/UpFile/2010122214822692.pdf
     """
     curveId ='swp256cccao01'
-    aka = ('Fp-256',)
     strength = 128
     oid = None
     p = 0x8542D69E4C044F18E8B92435BF6FF7DE457283915C45517D722EDB8B08F1DFC3
@@ -190,6 +189,7 @@ class SWP256CCAO01( SmallWeierstrassCurveFp ):
     xG = 0x421DEBD61B62EAB6746434EBC3CC315E32220B3BADD50BDC4C4E6C147FEDD43D
     yG = 0x0680512BCBB42C07D47349D2153B70C4E5D7FDFCBFA36EA1A85841B9E46E09A2
     n = 0x8542D69E4C044F18E8B92435BF6FF7DD297720630485628D5AE74EE7C32E79B7
+    h = 1
 
 
 class SWP256SM2( SmallWeierstrassCurveFp ):
@@ -210,24 +210,107 @@ class SWP256SM2( SmallWeierstrassCurveFp ):
     n = 0xFFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFF7203DF6B21C6052B53BBF40939D54123
     h = 1
 
+""" Russian GOST curves from GOST R 34.10-2001 and GOST R 34.10-2012
+    RFC-4357, Additional Cryptographic Algorithms for Use with GOST 28147-89
+    RFC-7091 GOST R 34.10-2012: Digital Signature Algorithm
+"""
 
-class SWP256GOST01( SmallWeierstrassCurveFp ):
-    """ Russian GOST curve GOST R 34.10-2012 
-        https://tools.ietf.org/html/rfc7091
-        http://standartgost.ru/en/180829
-    """
-    curveId ='swp256gost01'
-    aka = ('Fp-256',)
+class GOST2001_test( SmallWeierstrassCurveFp ):
+    curveId = 'GOST2001-test'
     strength = 128
-    oid = None 
+    # { iso(1) member-body(2) ru(643) rans(2) cryptopro(2) ecc-signs(35) test(0) }
+    oid = (1,2,643,2,2,35,0)
     p = 0x8000000000000000000000000000000000000000000000000000000000000431
-    a = 0x7
-    b = 0x5FBFF498AA938CE739B8E022FBAFEF40563F6E6A3472FC2A514C0CE9DAE23B7E
-    xG = 0x2
-    yG = 0x8E2A8A0E65147D4BD6316030E16D19C85C97F0A9CA267122B96ABBCEA7E8FC8
-    n = 0x8000000000000000000000000000000150FE8A1892976154C59CFC193ACCF5B3
+    a = 0x0000000000000000000000000000000000000000000000000000000000000007
+    b = 0x5fbff498aa938ce739b8e022fbafef40563f6e6a3472fc2a514c0ce9dae23b7e
+    xG = 0x0000000000000000000000000000000000000000000000000000000000000002
+    yG = 0x08e2a8a0e65147d4bd6316030e16d19c85c97f0a9ca267122b96abbcea7e8fc8
+    n = 0x8000000000000000000000000000000150fe8a1892976154c59cfc193accf5b3
     h = 1
-    
+
+
+class GOST2001_CryptoPro_A( SmallWeierstrassCurveFp ):
+    curveId = 'GOST2001-CryptoPro-A'
+    strength = 128
+    # { iso(1) member-body(2) ru(643) rans(2) cryptopro(2) ecc-signs(35) cryptopro-A(1) }
+    oid = (1,2,643,2,2,35,1)
+    p = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd97
+    a = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd94
+    b = 0x00000000000000000000000000000000000000000000000000000000000000a6
+    xG = 0x0000000000000000000000000000000000000000000000000000000000000001
+    yG = 0x8d91e471e0989cda27df505a453f2b7635294f2ddf23e3b122acc99c9e9f1e14
+    n = 0xffffffffffffffffffffffffffffffff6c611070995ad10045841b09b761b893
+    h = 1
+
+
+class GOST2001_CryptoPro_B( SmallWeierstrassCurveFp ):
+    curveId = 'GOST2001-CryptoPro-B'
+    strength = 128
+    # { iso(1) member-body(2) ru(643) rans(2) cryptopro(2) ecc-signs(35) cryptopro-B(2) }
+    oid = (1,2,643,2,2,35,2)
+    p = 0x8000000000000000000000000000000000000000000000000000000000000c99
+    a = 0x8000000000000000000000000000000000000000000000000000000000000c96
+    b = 0x3e1af419a269a5f866a7d3c25c3df80ae979259373ff2b182f49d4ce7e1bbc8b
+    xG = 0x0000000000000000000000000000000000000000000000000000000000000001
+    yG = 0x3fa8124359f96680b83d1c3eb2c070e5c545c9858d03ecfb744bf8d717717efc
+    n = 0x800000000000000000000000000000015f700cfff1a624e5e497161bcc8a198f
+    h = 1
+
+
+class GOST2001_CryptoPro_C( SmallWeierstrassCurveFp ):
+    curveId = 'GOST2001-CryptoPro-C'
+    strength = 128
+    # { iso(1) member-body(2) ru(643) rans(2) cryptopro(2) ecc-signs(35) cryptopro-C(3) }
+    oid = (1,2,643,2,2,35,3)
+    p = 0x9b9f605f5a858107ab1ec85e6b41c8aacf846e86789051d37998f7b9022d759b
+    a = 0x9b9f605f5a858107ab1ec85e6b41c8aacf846e86789051d37998f7b9022d7598
+    b = 0x000000000000000000000000000000000000000000000000000000000000805a
+    xG = 0x0000000000000000000000000000000000000000000000000000000000000000
+    yG = 0x41ece55743711a8c3cbf3783cd08c0ee4d4dc440d4641a8f366e550dfdb3bb67
+    n = 0x9b9f605f5a858107ab1ec85e6b41c8aa582ca3511eddfb74f02f3a6598980bb9
+    h = 1
+
+
+class GOST2012_test( SmallWeierstrassCurveFp ):
+    curveId = 'GOST2012-test'
+    strength = 255
+    # { iso(1) member-body(2) ru(643) ...
+    oid = (1,2,643,7,1,2,1,2,0)
+    p = 0x4531acd1fe0023c7550d267b6b2fee80922b14b2ffb90f04d4eb7c09b5d2d15df1d852741af4704a0458047e80e4546d35b8336fac224dd81664bbf528be6373
+    a = 0x0000000000000000000000000000000000000000000000000000000000000007
+    b = 0x1cff0806a31116da29d8cfa54e57eb748bc5f377e49400fdd788b649eca1ac4361834013b2ad7322480a89ca58e0cf74bc9e540c2add6897fad0a3084f302adc
+    xG = 0x24d19cc64572ee30f396bf6ebbfd7a6c5213b3b3d7057cc825f91093a68cd762fd60611262cd838dc6b60aa7eee804e28bc849977fac33b4b530f1b120248a9a
+    yG = 0x2bb312a43bd2ce6e0d020613c857acddcfbf061e91e5f2c3f32447c259f39b2c83ab156d77f1496bf7eb3351e1ee4e43dc1a18b91b24640b6dbb92cb1add371e
+    n = 0x4531acd1fe0023c7550d267b6b2fee80922b14b2ffb90f04d4eb7c09b5d2d15da82f2d7ecb1dbac719905c5eecc423f1d86e25edbe23c595d644aaf187e6e6df
+    h = 1
+
+
+class GOST2012_tc26_A( SmallWeierstrassCurveFp ):
+    curveId = 'GOST2012-tc26-A'
+    strength = whatever
+    # { iso(1) member-body(2) ru(643) ...
+    oid = (1,2,643,7,1,2,1,2,1)
+    p = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdc7
+    a = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdc4
+    b = 0xe8c2505dedfc86ddc1bd0b2b6667f1da34b82574761cb0e879bd081cfd0b6265ee3cb090f30d27614cb4574010da90dd862ef9d4ebee4761503190785a71c760
+    xG = 0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003
+    yG = 0x7503cfe87a836ae3a61b8816e25450e6ce5e1c93acf1abc1778064fdcbefa921df1626be4fd036e93d75e6a50e3a41e98028fe5fc235f5b889a589cb5215f2a4
+    n = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff27e69532f48d89116ff22b8d4e0560609b4b38abfad2b85dcacdb1411f10b275
+    h = 1
+
+
+class GOST2012_tc26_B( SmallWeierstrassCurveFp ):
+    curveId = 'GOST2012-tc26-B'
+    strength = whatever
+    oid = (1,2,643,7,1,2,1,2,2)
+    p = 0x8000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006f
+    a = 0x8000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006c
+    b = 0x687d1b459dc841457e3e06cf6f5e2517b97c7d614af138bcbf85dc806c4b289f3e965d2db1416d217f8b276fad1ab69c50f78bee1fa3106efb8ccbc7c5140116
+    xG = 0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002
+    yG = 0x1a8f7eda389b094c2c071e3647a8940f3c123b697578c213be6dd9e6c8ec7335dcb228fd1edf4a39152cbcaaf8c0398828041055f94ceeec7e21340780fe41bd
+    n = 0x800000000000000000000000000000000000000000000000000000000000000149a1ec142565a545acfdb77bd9d40cfa8b996712101bea0ec6346c54374f25bd
+    h = 1
+
     
 class FRP256v1( SmallWeierstrassCurveFp ):
     """ French National Agency for the Security of Information Systems 2009 
@@ -275,9 +358,9 @@ class SECP_521r1( SmallWeierstrassCurveFp ):
     p = 0x1ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
     a = p - 3  
     b  = 0x051953eb9618e1c9a1f929a21a0b68540eea2da725b99b315f3b8b489918ef109e156193951ec7e937b1652c0bd3bb1bf073573df883d2c34f1ef451fd46b503f00
-    n  = 0x1fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffa51868783bf2f966b7fcc0148f709a5d03bb5c9b8899c47aebb6fb71e91386409
     xG = 0x0c6858e06b70404e9cd9e3ecb662395b4429c648139053fb521f828af606b4d3dbaa14b5e77efe75928fe1dc127a2ffa8de3348b3c1856a429bf97e7e31c2e5bd66
     yG = 0x11839296a789a3bc0045c8a5fb42c7d1bd998f54449579b446817afbd17273e662c97ee72995ef42640c550b9013fad0761353c7086a272c24088be94769fd16650
+    n  = 0x1fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffa51868783bf2f966b7fcc0148f709a5d03bb5c9b8899c47aebb6fb71e91386409
     h = 1
  
     seed = 0xd09e8800291cb85396cc6717393284aaa0da64ba 
@@ -416,8 +499,6 @@ class BrainPoolP256t1( SmallWeierstrassCurveFp ):
     yG = 0x2D996C823439C56D7F7B22E14644417E69BCB6DE39D027001DABE8F35B25C9BE
     n  = 0xA9FB57DBA1EEA9BC3E660A909D838D718C397AA3B561A6F7901E0E82974856A7
     h  = 1
-
-    z  = 0x3E2D4BD9597B58639AE7AA669CAB9837CF5CF20A2C852D10F655668DFC150EF0
 
 
 class BrainPoolP320r1( SmallWeierstrassCurveFp ):
