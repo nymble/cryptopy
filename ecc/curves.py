@@ -198,7 +198,7 @@ class SWP256SM2( SmallWeierstrassCurveFp ):
         http://www.oscca.gov.cn/UpFile/2010122214836668.pdf
         https://eprint.iacr.org/2013/816.pdf
     """
-    curveid = 'swp256sm2'
+    curveId = 'swp256sm2'
     strength = 128
     oid = None
     # p = 2**256 - 2**225 + 2**224 - 2**96 + 2**64 - 1
@@ -287,7 +287,7 @@ class GOST2012_test( SmallWeierstrassCurveFp ):
 
 class GOST2012_tc26_A( SmallWeierstrassCurveFp ):
     curveId = 'GOST2012-tc26-A'
-    strength = whatever
+    strength = 512
     # { iso(1) member-body(2) ru(643) ...
     oid = (1,2,643,7,1,2,1,2,1)
     p = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdc7
@@ -301,7 +301,7 @@ class GOST2012_tc26_A( SmallWeierstrassCurveFp ):
 
 class GOST2012_tc26_B( SmallWeierstrassCurveFp ):
     curveId = 'GOST2012-tc26-B'
-    strength = whatever
+    strength = 512
     oid = (1,2,643,7,1,2,1,2,2)
     p = 0x8000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006f
     a = 0x8000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006c
@@ -684,31 +684,28 @@ class E521( EdwardsCurveFp ):
 
 
 # --- collect curves of same type ---
+
 def get_all_classes():
     """ Python introspection return name and reference to all classes in module """
     return inspect.getmembers( sys.modules[__name__],
                 lambda member: inspect.isclass(member) and
                 member.__module__ == __name__)
-    
-secpCurves = [SECP_192r1, SECP_224r1, SECP_256k1, SECP_256r1, SECP_384r1, SECP_521r1]  
-nistCurves = [NIST_P192,  NIST_P224, NIST_P256,  NIST_P384,  NIST_P521]
-brainPoolCurves = [BrainPoolP160r1, BrainPoolP192r1, BrainPoolP224r1, BrainPoolP256r1, BrainPoolP320r1, BrainPoolP384r1, BrainPoolP512r1, \
-                   BrainPoolP160t1, BrainPoolP192t1, BrainPoolP224t1, BrainPoolP256t1, BrainPoolP320t1, BrainPoolP384t1, BrainPoolP512t1]
-edwardsCurves = [E382, Curve3617, E521]
-montgomeryCurves = [Curve25519, M383, MontgomeryCurveFp]
-wierstrassCurves = nistCurves + brainPoolCurves + secpCurves + [SWP256CCAO01, SWP256GOST01, FRP256v1]
-allCurves = wierstrassCurves + edwardsCurves + montgomeryCurves
-"""
-clsmembers = inspect.getmembers( sys.modules[__name__],
-             lambda member: inspect.isclass(member) and
-             member.__module__ == __name__)
 
 smallWeierstrassCurves = []
-montgomeryCurves = []
+koblitzCurves = []
 edwardsCurves = []
+montgomeryCurves = []
 
-for cname, c in clsmembers:
-    print cname, c.__bases__[0].__name__
-"""
-if __name__ == '__main__':
-    pass
+for cname, c in get_all_classes():
+    if c.__bases__[0].__name__ == 'SmallWeierstrassCurveFp':
+        smallWeierstrassCurves.append(c)
+    elif c.__bases__[0].__name__ == 'EdwardsCurveFp':
+        edwardsCurves.append(c)
+    elif c.__bases__[0].__name__ == 'MontgomeryCurveFp':
+        montgomeryCurves.append(c)
+    elif c.__bases__[0].__name__ == 'KoblitzCurveFp':
+        koblitzCurves.append(c)
+    else:
+        pass # ignore subclassed duplicates
+
+allCurves = smallWeierstrassCurves + koblitzCurves + edwardsCurves + montgomeryCurves
