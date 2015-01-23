@@ -185,10 +185,11 @@ class SmallWeierstrassCurveFp( EllipticCurveFp ):
             return result / 2
     
         e = scalar
-        # if point.n: e = e % point.n #?? if n=None??
         e = e % point.curve.n
-        if e == 0: return INFINITY
-        if point == INFINITY: return INFINITY
+        if e == 0:
+            return INFINITY
+        if point == INFINITY:
+            return INFINITY
         assert e > 0
     
         e3 = 3 * e
@@ -197,8 +198,10 @@ class SmallWeierstrassCurveFp( EllipticCurveFp ):
         result = point
         while i > 1:
             result = result.double()
-            if ( e3 & i ) != 0 and ( e & i ) == 0: result = result + point
-            if ( e3 & i ) == 0 and ( e & i ) != 0: result = result + negative_self
+            if ( e3 & i ) != 0 and ( e & i ) == 0:
+                result = result + point
+            if ( e3 & i ) == 0 and ( e & i ) != 0:
+                result = result + negative_self
             # print ". . . i = %d, result = %s" % ( i, result )
             i = i / 2   
         return result

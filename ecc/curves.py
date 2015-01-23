@@ -693,12 +693,15 @@ def get_all_classes():
 
 smallWeierstrassCurves = []
 koblitzCurves = []
+twistedEdwardsCurves = []
 edwardsCurves = []
 montgomeryCurves = []
 
-for cname, c in get_all_classes():
+for curve_name, c in get_all_classes():
     if c.__bases__[0].__name__ == 'SmallWeierstrassCurveFp':
         smallWeierstrassCurves.append(c)
+    elif c.__bases__[0].__name__ == 'TwistedEdwardsCurveFp':
+        twistedEdwardsCurves.append(c)
     elif c.__bases__[0].__name__ == 'EdwardsCurveFp':
         edwardsCurves.append(c)
     elif c.__bases__[0].__name__ == 'MontgomeryCurveFp':
@@ -706,6 +709,8 @@ for cname, c in get_all_classes():
     elif c.__bases__[0].__name__ == 'KoblitzCurveFp':
         koblitzCurves.append(c)
     else:
-        pass # ignore subclassed duplicates
+        pass # ignore other subclassed curves, so far they are all duplicates
 
-allCurves = smallWeierstrassCurves + koblitzCurves + edwardsCurves + montgomeryCurves
+allCurves = smallWeierstrassCurves + koblitzCurves + twistedEdwardsCurves + edwardsCurves + montgomeryCurves
+
+print allCurves
