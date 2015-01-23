@@ -3,7 +3,7 @@
 """
 import unittest
 from ecc import SmallWeierstrassCurveFp
-from curves import NIST_P192, NIST_P521, BrainPoolP256r1, wierstrassCurves
+from curves import NIST_P192, NIST_P521, BrainPoolP256r1, smallWeierstrassCurves
 from curves import Curve3617, Curve25519
 
 
@@ -177,7 +177,7 @@ class TestPointUncompression(unittest.TestCase):
 class TestAllCurves(unittest.TestCase):
     """ Basic validation of Curve generators """
     def test_G_times_n(self):
-        for Curve in wierstrassCurves: # now may work for Edwards 
+        for Curve in smallWeierstrassCurves: # now may work for Edwards 
             c = Curve()
             IDENTITY = c.identity()
             print c.curveId, c.oid

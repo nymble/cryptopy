@@ -713,4 +713,3 @@ for curve_name, c in get_all_classes():
 
 allCurves = smallWeierstrassCurves + koblitzCurves + twistedEdwardsCurves + edwardsCurves + montgomeryCurves
 
-print allCurves
