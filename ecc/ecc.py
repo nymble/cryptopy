@@ -1,139 +1,31 @@
 #!/usr/bin/env python
 """ ecc.py
 
-Elliptic Curve
+    Elliptic Curve Cryptograpy
 
-Refs: http://safecurves.cr.yp.to/index.html
-      http://ed25519.cr.yp.to/python/ed25519.py
-      https://github.com/warner/python-ed25519/blob/master/kat.py
-      Extension and repackaging of Peter Pearson's open source ECC
+Refs:   Extension and repackaging of Peter Pearson's open source ECC
+        http://safecurves.cr.yp.to/index.html
+        http://ed25519.cr.yp.to/python/ed25519.py
+        https://github.com/warner/python-ed25519/blob/master/kat.py
+      
 
 20131201 refactored
 2015  projections and new curve type changes, midway in refactor .... 
 
 Paul A. Lambert 2015
 """
-from numbertheory import inverse_mod, square_root_mod_prime
-
-class EllipticCurveError(Exception): pass
-
-class EllipticCurveFp(object):
-    """ A Elliptic Curve over the field of integers modulo a prime.
-        Overloaded by specific curve types to support:
-            SmallWeierstrassCurveFp
-            TwistedEdwardsCurveFp
-            EdwardsCurveFp
-            MontgomeryCurveFp
-
-       A collection of curves using this class are in:  curves.py
-    """
-    def __init__(self):
-        self.coord_size = len( int_to_string(self.p) )
-        self.IDENTITY = self.identity()  # aka INFINITY for Weierstrass curves
-    
-    def point(self, x, y):
-        """ Factory method to make points on a curve """
-        return Point(self, x, y)
-        
-    def generator(self):
-        """ Return the ECC generator point G """
-        return self.point(self.xG, self.yG)
-    
-    def uncompress(self, xR):
-        """ Return a new point R from just x-coordinate xR
-            Note - this is not ANSI or SEC format 'x' with
-                   leading 2 bits holding (2 + yR mod 2)
-            yR will be incorrect for 50% of runs,
-            but ECDH will still have correct answer
-        """
-        a = self.a
-        b = self.b
-        p = self.p
-        #t0 = ( xR*xR*xR + a*xR + b ) % p
-        t0 = ((xR*xR + a)*xR + b ) % p
-        t1 = square_root_mod_prime( t0, p )
-        yR = t1   # it might also be yR = p - t1
-        R = self.point( xR, yR )
-        if self.contains_point(R):
-            return R
-        yR = p - t1
-        R = self.point( xR, yR )
-        if self.contains_point(R):
-            return R
-        else:
-            EllipticCurveError( "uncompress failed")
-        
-    def inverse(self, a):
-        """ scalar inversion in Fp - overload for 'p' specific optimizations """
-        return inverse_mod(a, self.p)  # this is a generic inverse_mod
-                                  # 7 times faster than pow(a, self.p-2, self.p)
-                     
-
-class Point(object):
-    """ An Afine point on an elliptic curve """
-    def __init__(self, curve, x, y):
-        """Create point on identified 'curve' having points x and y"""
-        self.curve = curve
-        self.x = x
-        self.y = y     
-
-    def __add__(self, other):
-        return self.curve.add_points(self, other)
-        
-    def __neg__(self):
-        return self.curve.negate(self)
-
-    def __sub__(self, other):
-        return self + -other
-    
-    def __cmp__(self, other):
-        """Return 0 if the points are identical, 1 otherwise."""
-        if self.curve == other.curve and self.x == other.x and self.y == other.y:
-            return 0
-        else:
-            return 1       
-    
-    def __mul__(self,other):
-        return self.curve.scalar_multiple(self,other)
-        
-    def __rmul__(self, other):
-        """Multiply a integer by a point."""     
-        return self * other
-
-    def __str__(self):
-        if self == self.curve.identity(): return "Identity"
-        return "(%d,%d)" % ( self.x, self.y )
-
-    def double(self):
-        """Return a new point that is twice the old """   
-        return self.curve.double_point(self)
-
-    def encode(self, encode='raw'):
-        """ Encode a point (usually for public keys) """
-        if encode == 'raw':   # encode both x and y sequentially
-            return int_to_string(self.x, padto=self.curve.coord_size) + int_to_string(self.y, padto=self.curve.coord_size)
-        else:
-            raise Exception('undefined encode')
-                
-    def to_octetstring(self):
-        """ Encode point as x and y octetstring """
-        octetstring = int_to_string(self.x) + int_to_string(self.y)
-        return octetstring
-    
-    def from_octetstring(self,octetstring):
-        """
-        http://tools.ietf.org/html/draft-jivsov-ecc-compact-00 """
-        raise "to do"
-    
-    def __str__(self):
-        if self == self.curve.identity():
-            return "IDENTITY"
-        return "(%d,%d)" % ( self.x, self.y )    
+from ellipticcurve import EllipticCurveFp
+  
 
 class SmallWeierstrassCurveFp( EllipticCurveFp ):
     """ A Small Wierstrass curve has points on:
             y^2 == x^3 + a*x^2+b  over  GF(p)
     """
+    def on_curve(curve, g):
+        p = curve.p;  a = curve.a;  b = curve.b;  x = g.x;  y = g.y
+
+        return  y^2  == x^3 + a*x^2 + b
+    
     def contains_point(curve, g):
         """Is the point 'g' on the Small Weierstrass curve"""
         p = curve.p;  a = curve.a;  b = curve.b;  x = g.x;  y = g.y

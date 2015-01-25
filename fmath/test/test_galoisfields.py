@@ -1,16 +1,22 @@
 #!/usr/bin/env python
 """ test_galoisfields.py
-    Unit tests for overloading of: +, -, /, ^ for modular math on GF(p)
+    Unit tests for overloading of: +, -, /, ^ for modular math on GFp(p)
     
     Copyright Paul A. Lambert 2015
 """
 import unittest
-from galoisfield import GF
 from random import randrange
 
-class TestGaloisFIeld(unittest.TestCase):
+if __name__ == '__main__' and __package__ is None:
+    from os import sys, path
+    sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))   
+    from galoisfield import GFp
+else:
+    from ..galoisfield import GFp
+
+class TestGaloisField_P(unittest.TestCase):
     def test_add_sub_neg(self):       
-        gfp = GF(11)
+        gfp = GFp(11)
         x = gfp(1)
         y = gfp(8)
         self.assertTrue( y-x == -(x-y) )
@@ -19,16 +25,18 @@ class TestGaloisFIeld(unittest.TestCase):
         self.assertTrue( y-3 == -(3-y) )
     
     def test_mult(self):
-        gfp = GF(11)
+        gfp = GFp(11)
         x = gfp(7)
         y = gfp(8)
         self.assertTrue( x*y == x*8 )
         self.assertTrue( x*y == 7*y )
         
     def test_inversion(self):
-        gfp = GF(11)
+        gfp = GFp(11)
         for i in range(1, gfp.p):
+            
             self.assertTrue( int(gfp(i) * gfp.inverse(i)) == 1)
+            
             a = gfp(7)/gfp(i)
             b = 7/gfp(i)
             c = gfp(7)/i
@@ -37,7 +45,7 @@ class TestGaloisFIeld(unittest.TestCase):
 
     def test_exp(self):
         """ the '^' is overloaded to support x^2 as exponentiation """
-        gfp = GF(11)
+        gfp = GFp(11)
         x = gfp(4)
         z = 2^x
         y = gfp(2**4)
@@ -45,12 +53,12 @@ class TestGaloisFIeld(unittest.TestCase):
         self.assertTrue( 2^x == gfp(int(2)**int(x)) )
 
     def test_misc(self):
-        gfp = GF(2**255 - 19)
+        gfp = GFp(2**255 - 19)
         x = gfp(0x20ae19a1b8a086b4e01edd2c7748d14c923d4d7e6d7c61b229e9c5a27eced3d9)
         a24 = gfp(486662-2) / gfp(4)
         self.assertTrue( int(a24) == 121665)
         p = 2**255 - 19
-        gfp = GF(p)
+        gfp = GFp(p)
         for i in range(100):
             x = randrange(p)
             invx = 1/gfp(x)

@@ -3,7 +3,7 @@
     
     A large number of digits of 'pi'
     
-    pi_string - provides text version "3.14159 ...
+    pi_string - returns a text version "3.14159 ...
     pi(num_digits) - returns a fractiona representation of pi
                      accurate to num_digits
     
