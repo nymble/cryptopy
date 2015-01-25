@@ -1,23 +1,29 @@
 #!/usr/bin/env python
 """ galoisfield.py
+
+    Support for math operations module prime p, GF(p)
+    Overloads Python operators + - / ^  ==
+    Note that '^' is used for exponentiation in addition to than Python '**"
+    for better maping to math references
+    
+        Usage example:
+            gfp = GFp(2**255 - 19)
+            x = gfp(x_value)
+            y = x*^2+3*x+1    # math and y result in GF(p)
     
     Paul A. Lambert Copyright 2015
 """
 
-class GF:
+class GFp:
     """ Support for math operations module prime p, GF(p)
-        Usage example:
-            gfp = GF(2**255 - 19)
-            x = gfp(x_value)
-            y = x*^2+3*x+1    # math and y result in GF(p)
     """
     def __init__(self, p):
         """ Galois Field is initialized with a prime p """
         self.p = p
         
     def __call__(self, value):
-        """ Factory method to cereate elements in the field """
-        return Element_of_GF(self, value)
+        """ Factory method to create elements in the field """
+        return Element_of_GFp(self, value)
         
     def is_element(self, x):
         return (p > x > 0)
@@ -26,11 +32,11 @@ class GF:
         return inverse_mod(x, self.p)
 
 
-class Element_of_GF:
+class Element_of_GFp:
     """ Elements in a Galois Field that support operator overloading
     """
     def __init__(self, gf, value):
-        self.gf = gf  # gf should be an instance of GF 
+        self.gf = gf 
         self.value = value % self.gf.p
         
     def __add__(self, other):
