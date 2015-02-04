@@ -2,19 +2,22 @@
 """ curve_generation.py
 
     Algorithms to generate new curves and to validate rigid curve definitions
+    
+    incomplete
 """
 from ecc import EdwardsCurveFp, MontgomeryCurveFp
 
 class Edwards_draft_black_rpgecc_01( EdwardsCurveFp ):
-    """  from draft-black-rpgecc-01
+    """ Generating a Edwards Curve ridgidly for a given 'p'
+        from IETF CFRG draft-black-rpgecc-01
     """
 
     def new_curve_d(self, p):
         """ Output a 'd' parameter for an Edwards Curve
-            from draft-black-rpgecc-01
+            from method in draft-black-rpgecc-01
         """
-        # assert is_prime(p)
-        assert      p % 4 == 3
+        assert    is_prime(p)
+        assert    p % 4 == 3
         d = 0
         while True:
             while True:
@@ -29,25 +32,35 @@ class Edwards_draft_black_rpgecc_01( EdwardsCurveFp ):
                 
             # Compute rd, rd', hd, hd' where #Ed(GF(p)) = hd * rd,
             #Ed'(GF(p)) = hd' * rd', hd and hd' are powers of 2 and rd, rd'are odd
-       
+            rd, hd = self.find_r_h()
+            rd_prime, hd_prime = self.find_r_h_prime()
+                            
             # until ((hd = hd' = 4) and rd is prime and rd' is prime)
-            # if .... etc
+            if (hd == 4) and (hd_prime == 4) and is_prime(rd) and is_prime(rd_prime):
+                break
+        
         return d
-"""
 
-6.  Generators
+    def find_r_h(self): raise 'not implemented'  # need a point counting rountine
+    def find_r_h_prime(self): raise 'not implemented'
 
-   The generator points P = (X(P),Y(P)) for all curves are selected by
-   taking the smallest positive value x in GF(p) (when represented as an
-   integer) such that (x, y) is on the curve and such that (X(P),Y(P)) =
-   8 * (x, y) has large prime order rd.
+    def new_generator(self):
+        """ Generator points are selected by taking the smallest positive 
+            value x in GF(p) (when represented as an integer) such 
+            that (x, y) is on the curve and such
+            that (X(P),Y(P)) = 8 * (x, y) has large prime order rd.
 
-   Input: a prime p and curve parameters non-square d and
-          a = -1 for twisted Edwards (p = 1 mod 4) or
-          a = 1 for Edwards (p = 3 mod 4)
-   Output: a generator point P = (X(P), Y(P)) of order rd
-   1. Set x = 0 and found_gen = false
-   2. while (not found_gen) do
+            Input: a prime p and curve parameters non-square d and
+              a = -1 for twisted Edwards (p = 1 mod 4) or
+              a = 1 for Edwards (p = 3 mod 4)
+            
+            Output: a generator point 'g' = curve.point(x,y) of order rd
+        """
+        p = self.p;  rd = self.rd; a = self.a
+        
+        x = 0; found_gen = False  # 1. Set x = 0 and found_gen = false
+        while (not found_gen):    # 2.
+            
        x = x + 1
        while ((1 - a * x^2) * (1 - d * x^2) is not a quadratic
               residue mod p) do

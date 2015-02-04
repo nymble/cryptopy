@@ -34,15 +34,13 @@ class TestCurve25519(unittest.TestCase):
         curve = Curve25519(); G = curve.generator()
         
         # Alice's random private key
-        d_a = 0x77076d0a7318a57d3c16c17251b26645df4c2f87ebc0992ab177fba51db92c2a
-        
+        d_a = 0x77076d0a7318a57d3c16c17251b26645df4c2f87ebc0992ab177fba51db92c2a   
         Q_a = d_a * G   # calculating the public key Q
-        
+   
         # Alice's public key known test value
         Q_ak = 0x8520f0098930a754748b7ddcb43ef75a0dbf3a0d26381af4eba4a98eaa9b4e6a
         
-        test.assertTrue(  Q_a == Q_ak  )
-        
+        test.assertTrue(  Q_a == Q_ak  )     
         
         # Bob's private key
         d_b = 0x5dab087e624a8a4b79e17f8b83800ee66f3bb1292618b6fd1c2f8b27ff88e0eb
@@ -53,22 +51,9 @@ class TestCurve25519(unittest.TestCase):
         
         self.assertTrue( n*G == IDENTITY )
 
-if __name__ == '__main__':
-    unittest.main()
-class TestCurve25519(unittest.TestCase):
-    """ Curve25519
-    """
-
-    def test_G_times_n(self):
-        """ Test that n*G == IDENTITY """
-        c = Curve25519(); n = c.n; IDENTITY = c.identity(); G = c.generator()
-        
-        self.assertTrue( n*G == IDENTITY )
-        
-
-        
-    def test_C25519_DH(self):
-        """ draft-josefsson-tls-curve25519-02 """
+      
+    def test_C25519_josefsson(self):
+        """ from draft-josefsson-tls-curve25519-02 """
         c = Curve25519()
         g = c.generator()
         d_A = 0x5AC99F33632E5A768DE7E81BF854C27C46E3FBF2ABBACD29EC4AFF517369C660
