@@ -104,7 +104,7 @@ class SmallWeierstrassCurveFp( EllipticCurveFp ):
 
 
 class KoblitzCurveFp( SmallWeierstrassCurveFp ):
-    """ A Koblitz curve is a SMall Weierstrass curve with a=0 :
+    """ A Koblitz curve is a Small Weierstrass curve with a=0 :
             y**2 == x**3 + b  over  GF(p)
     """
     a = 0

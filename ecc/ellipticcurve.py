@@ -15,7 +15,6 @@
     A collection of curves using this class are in:  curves.py
        
 20131201 refactored
-2015  projections and new curve type changes, midway in refactor .... 
 
 Paul A. Lambert 2015
 """
