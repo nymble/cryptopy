@@ -53,7 +53,8 @@
       b - selected for the security properties of the curve shape
 
     Twisted Edwards      a*x**2 + y**2 == 1 + d*x**2 * y**2 mod p    
-      a - selected for the security properties of the curve shape           
+      a - selected for the security properties of the curve shape
+          often set to -1 as default definition of Twisted Edwards
       d - selected for the security properties of the curve shape
       
     Edwards              x**2 + y**2 == c*(1 + d*x**2 * y**2) mod p
@@ -68,7 +69,7 @@
     
     Paul A. Lambert, December 2013
 """
-from ecc import SmallWeierstrassCurveFp, KoblitzCurveFp, EdwardsCurveFp, MontgomeryCurveFp
+from ecc import SmallWeierstrassCurveFp, KoblitzCurveFp, TwistedEdwardsCurveFp, EdwardsCurveFp, MontgomeryCurveFp
 import sys, inspect
 
 class SECP_192r1( SmallWeierstrassCurveFp ):
@@ -656,14 +657,16 @@ class Curve25519( MontgomeryCurveFp ):
     strength = 126
     oid = None
     p  = 2**255-19
-    a  = 486662
+    a = -1
+    c  = 486662
     xG = 9
     yG = 0x20ae19a1b8a086b4e01edd2c7748d14c923d4d7e6d7c61b229e9c5a27eced3d9
-    n  = 2**252 + 27742317777372353535851937790883648493 
+    r  = 2**252 + 27742317777372353535851937790883648493
     h  = 8
+    n  = h * r 
     
     
-class Ed25519( EdwardsCurveFp ):
+class Ed25519( TwistedEdwardsCurveFp ):
     """ (x**2 + y**2) % p == (1 + 121665/121666)*x**2 * y**2) % p """
     curveId = 'Ed25519'
     strength = 126
@@ -671,12 +674,45 @@ class Ed25519( EdwardsCurveFp ):
     p  = 2**255 - 19
     d =  1      #  d = (121665/121666) % p
     xG = 9
-    yG = 14781619447589544791020593568409986887264606134616475288964881837755586237401
+    #yG = 14781619447589544791020593568409986887264606134616475288964881837755586237401
     yG = 0x20ae19a1b8a086b4e01edd2c7748d14c923d4d7e6d7c61b229e9c5a27eced3d9
-    n  = 2**252 + 27742317777372353535851937790883648493 
-    h  = 8     
+    r  = 2**252 + 27742317777372353535851937790883648493 
+    h  = 8
+    n = h * r
+ 
+class MS255t1( TwistedEdwardsCurveFp ):
+    """ MS https://datatracker.ietf.org/doc/draft-black-rpgecc/
+        The isogenous Montgomery curve is given by A = 0x76D06 = 486662
+    """
+    curveId = 'ms255t1'
+    strength = 126
+    oid = None
+    # p = 255** - 19
+    p = 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFED
+    a = -1
+    d = 121665  # 0x1DB41 
+    xG = 0x5C88197130371C6958E48E7C57393BDEDBA29F9231D24B3D4DA2242EC821CDF1
+    yG = 0x6FEC03B956EC4A0E51A838029242F8B107C27399CC7840C34B955E478A8FB7A5
+    r = 0x1000000000000000000000000000000014DEF9DEA2F79CD65812631A5CF5D3ED
+    h = 8    
        
-       
+class MS384e1( EdwardsCurveFp ):
+    """ draft-black-rpgecc-01 
+        The isogenous Montgomery curve is given by A = 0xB492 = 46226
+    """
+    curveId = 'ms255t1'
+    strength = 198
+    oid = None
+    p = 2**384 - 317
+    c = 1
+    d = -11556
+    d = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFD19F
+    xG = 0x61B111FB45A9266CC0B6A2129AE55DB5B30BF446E5BE4C005763FFA8F33163406FF292B16545941350D540E46C206BDE
+    yG = 0x82983E67B9A6EEB08738B1A423B10DD716AD8274F1425F56830F98F7F645964B0072B0F946EC48DC9D8D03E1F0729392
+    r  = 0x3FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFE2471A1CB46BE1CF61E4555AAB35C87920B9DCC4E6A3897D
+    h = 4
+
+      
 class E382( EdwardsCurveFp ):
     """ x**2+y**2 == (1-67254*x**2*y**2) mod 2**382-105 """
     curveId = 'e382'

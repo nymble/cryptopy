@@ -112,13 +112,17 @@ class KoblitzCurveFp( SmallWeierstrassCurveFp ):
     
 class TwistedEdwardsCurveFp( EllipticCurveFp ):
     """ A Twisted Edwards curve has points on:
-            (a*x**2 + y**2) % p == (1 + d*x**2*y**2) % p
-    """       
+            (a*x**2 + y**2) % p == c*(1 + d*x**2*y**2) % p
+            
+           ( c*d*(1-d*c**4) ) % p <> 0
+    """
+    c = 1
+    
     def contains_point(curve, g):
         """ Returns true if the point 'g' is on the curve """
-        x = g.x; y = g.y; d = curve.d;  a = curve.a;  p = curve.p
+        x = g.x; y = g.y; d = curve.d;  a = curve.a;  c = curve.c; p = curve.p
         
-        return  (a*x**2 + y**2) % p == (1 + d*x**2*y**2) % p
+        return  (a*x**2 + y**2) % p == c*(1 + d*x**2*y**2) % p
             
     def add_points(curve, p1, p2):
         """ Add two points on the curve """
@@ -162,11 +166,13 @@ class TwistedEdwardsCurveFp( EllipticCurveFp ):
         
 class EdwardsCurveFp( TwistedEdwardsCurveFp ):
     """ An Edwards curve is a Twisted Edwards curve with a = 1
-            (a*x**2+y**2)%p == (1+d*x**2*y**2)%p
+            (a*x**2+y**2)%p == c*(1+d*x**2*y**2)%p
             or 
             (x**2+y**2)%p == (1+d*x**2*y**2)%p
     """
     a = 1
+    c = 1
+    
      
 class MontgomeryCurveFp( EllipticCurveFp ):
     """ A Montogomery curve has points on:
