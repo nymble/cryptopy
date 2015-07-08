@@ -57,7 +57,7 @@
       d - selected for the security properties of the curve shape
       
     Edwards              x**2 + y**2 == c*(1 + d*x**2 * y**2) mod p
-      A Edwards curve is a Twisted Edwards curve with a=0 and c=1 
+      A Edwards curve is a Twisted Edwards curve with a=1 and c=1 
       c - typically set to 1 so the equation is reduced to:
                          x**2 + y**2 == 1 + d*x**2 * y**2  mod p               
       d - selected for the security properties of the curve shape  
@@ -310,6 +310,61 @@ class GOST2012_tc26_B( SmallWeierstrassCurveFp ):
     yG = 0x1a8f7eda389b094c2c071e3647a8940f3c123b697578c213be6dd9e6c8ec7335dcb228fd1edf4a39152cbcaaf8c0398828041055f94ceeec7e21340780fe41bd
     n = 0x800000000000000000000000000000000000000000000000000000000000000149a1ec142565a545acfdb77bd9d40cfa8b996712101bea0ec6346c54374f25bd
     h = 1
+ 
+ 
+class GOSTmsg05975te( TwistedEdwardsCurveFp ):
+    """ from:
+        http://www.ietf.org/mail-archive/web/cfrg/current/msg05975.html
+        CryptoPro proposal, one of three, to http://tc26.ru/en/
+        eu^2 + v^2 = 1 + du^2v^2  versus    a*x**2 + y**2 == 1 + d*x**2 * y**2
+        We denote the total number of points on the curve as n
+        prime subgroup prime order as q.
+        The curve has been examined to be secure against MOV-attacks
+        (thus it can be believed to be DDH-secure)
+        and to satisfy CM-security requirements.
+        twisted curve points group order
+        has a prime factor of:
+        0x40000000000000000000000000000000000000000000000000000000000000003673245b9af954ffb3cc5600aeb8afd33712561858965ed96b9dc310b80fdaf7
+        while the other factor is equal to 4.
+        The curve can be used both for digital signatures and for Diffie-Hellman key agreement.
+    """
+    curveId = 'GOSTmsg05975te'
+    strength = 256
+    oid = None
+    p = 2**512 - 569   # with  p % 4 == 3
+    d = 0x9E4F5D8C017D8D9F13A5CF3CDF5BFE4DAB402D54198E31EBDE28A0621050439CA6B39E0A515C06B304E2CE43E79E369E91A0CFC2BC2A22B4CA302DBB33EE7550
+    a = 1  # was e in msg
+    n  = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF26336E91941AAC0130CEA7FD451D40B323B6A79E9DA6849A5188F3BD1FC08FB4
+    q  = 0x3FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFC98CDBA46506AB004C33A9FF5147502CC8EDA9E7A769A12694623CEF47F023ED
+    #???
+    n  = 0x40000000000000000000000000000000000000000000000000000000000000003673245b9af954ffb3cc5600aeb8afd33712561858965ed96b9dc310b80fdaf7
+    xG = 0x12
+    yG = 0x469AF79D1FB1F5E16B99592B77A01E2A0FDFB0D01794368D9A56117F7B38669522DD4B650CF789EEBF068C5D139732F0905622C04B2BAAE7600303EE73001A3D
+    h = 4  # n = h*q
+    
+    # The curve parameters have been generated using random nonce W in such way
+    # that a = 1, d = hash(W), where hash() is Russian national standard
+    # GOST R 34.11-2012 hash function (also known as ?Streebog?,
+    # https://www.streebog.net/en/). The seed valueis equal to:
+    seed = 0x1FBB7969B91B3EA08117FB1074BFBF5549DD660763F6A5AF0957775B664CB113CFCB91C4A77D279806BCF24A5677F25EAFFEC66776702EE2C7AA84160750DA1DD150AED28C3026AC7ED6D19B97AC2CB5827C0003184713535BFA6524B3E46083
+ 
+
+class GOSTmsg05975sw( SmallWeierstrassCurveFp ):
+    """ from:
+        http://www.ietf.org/mail-archive/web/cfrg/current/msg05975.html
+        related to GOSTmsg05975te
+    """
+    curveId = 'GOSTmsg05975sw'
+    strength = 256
+    oid = None
+    p = 2**512 - 569 
+    a = 0xDC9203E514A721875485A529D2C722FB187BC8980EB866644DE41C68E143064546E861C0E2C9EDD92ADE71F46FCF50FF2AD97F951FDA9F2A2EB6546F39689BD3
+    b = 0xB4C4EE28CEBC6C2C8AC12952CF37F16AC7EFB6A9F69F4B57FFDA2E4F0DE5ADE038CBC2FFF719D2C18DE0284B8BFEF3B52B8CC7A5F5BF0A3C8D2319A5312557E1
+    xG = 0xE2E31EDFC23DE7BDEBE241CE593EF5DE2295B7A9CBAEF021D385F7074CEA043AA27272A7AE602BF2A7B9033DB9ED3610C6FB85487EAE97AAC5BC7928C1950148
+    yG = 0xF5CE40D95B5EB899ABBCCFF5911CB8577939804D6527378B8C108C3D2090FF9BE18E2D33E3021ED2EF32D85822423B6304F726AA854BAE07D0396E9A9ADDC40F
+    n  = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF26336E91941AAC0130CEA7FD451D40B323B6A79E9DA6849A5188F3BD1FC08FB4
+    q  = 0x3FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFC98CDBA46506AB004C33A9FF5147502CC8EDA9E7A769A12694623CEF47F023ED
+    h = 4
 
     
 class FRP256v1( SmallWeierstrassCurveFp ):
