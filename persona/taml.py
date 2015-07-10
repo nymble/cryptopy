@@ -44,7 +44,7 @@ class Says(EonScalar):
     """ 'Says' identifies the public key acting as the speaker of the statement.
     """
     tag = 'says'
-    value_type = Id()
+    value_type = Uaid()
     tag_encoding = 0x01
     
 class This(EonScalar):
