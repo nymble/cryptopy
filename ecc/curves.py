@@ -68,7 +68,7 @@
     
     Paul A. Lambert, December 2013
 """
-from ecc import SmallWeierstrassCurveFp, KoblitzCurveFp, EdwardsCurveFp, MontgomeryCurveFp
+from ecc import SmallWeierstrassCurveFp, KoblitzCurveFp, EdwardsCurveFp, TwistedEdwardsCurveFp, MontgomeryCurveFp
 import sys, inspect
 
 class SECP_192r1( SmallWeierstrassCurveFp ):
@@ -317,12 +317,9 @@ class GOSTmsg05975te( TwistedEdwardsCurveFp ):
         http://www.ietf.org/mail-archive/web/cfrg/current/msg05975.html
         CryptoPro proposal, one of three, to http://tc26.ru/en/
         eu^2 + v^2 = 1 + du^2v^2  versus    a*x**2 + y**2 == 1 + d*x**2 * y**2
-        We denote the total number of points on the curve as n
-        prime subgroup prime order as q.
-        The curve has been examined to be secure against MOV-attacks
-        (thus it can be believed to be DDH-secure)
-        and to satisfy CM-security requirements.
-        twisted curve points group order
+        We denote the total number of points on the curve as n prime subgroup prime order as q.
+        The curve has been examined to be secure against MOV-attacks (thus it can be believed to be DDH-secure)
+        and to satisfy CM-security requirements. twisted curve points group order
         has a prime factor of:
         0x40000000000000000000000000000000000000000000000000000000000000003673245b9af954ffb3cc5600aeb8afd33712561858965ed96b9dc310b80fdaf7
         while the other factor is equal to 4.
