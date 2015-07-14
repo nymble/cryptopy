@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-""" test_aes_siv.py
+""" test_aes_cmac.py
 
-    Tests for AES CMAC
+    Tests for AES CMAC from NIST 800-38B
     
     References:
         RFC 4493 - http://www.rfc-editor.org/rfc/rfc4493.txt
@@ -14,19 +14,19 @@ import unittest
 
 if __name__ == '__main__' and __package__ is None:
     from os import sys, path
-    sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))   
-    from aes_cmac import aes_cmac, subkey
-else:
-    from ..aes_cmac import aes_cmac, subkey
+    p = path.abspath(__file__)  # ./cryptopy/cipher/test/test_aes_cmac.py
+    for i in range(4):  p = path.dirname( p )   # four levels down to project '.'
+    sys.path.append( p )
     
+from cryptopy.cipher.aes_cmac import aes_cmac, subkey
 
 class TestVectorsNIST_SP_800_38B(unittest.TestCase):
     """ Test Vectors from NIST Special Publication 800-38B """
     
-    def test_D1(self):
+    def test_AES128_CMAC(self):
         """ FIPS 800-38B D.1 AES-128 """
 
-        # For Examples 1?4 below, the block cipher is the
+        # For Examples 1 to 4 below, the block cipher is the
         # AES algorithm with the following 128 bit key: 
         key = '2b7e1516 28aed2a6 abf71588 09cf4f3c' 
 
@@ -66,7 +66,7 @@ class TestVectorsNIST_SP_800_38B(unittest.TestCase):
             t    = '51f0bebf 7e3b9d92 fc497417 79363cfe' )
            
 
-    def test_D2(self):
+    def test_AES192_CMAC(self):
         """ FIPS 800-38B D.2 AES-192 """
         
         key = '8e73b0f7 da0e6452 c810f32b 809079e5 62f8ead2 522c6b7b'
@@ -106,7 +106,7 @@ class TestVectorsNIST_SP_800_38B(unittest.TestCase):
                     f69f2445 df4f9b17 ad2b417b e66c3710''',
             t    = 'a1d5df0e ed790f79 4d775896 59f39a11' )
     
-    def test_D3(self):
+    def test_AES256_CMAC(self):
         """ FIPS 800-38B D.3 AES-256 """
         
         key = '''603deb10 15ca71be 2b73aef0 857d7781
@@ -155,8 +155,8 @@ def cmac_gen_test(test, key, k1='', k2=''):
     k2_known  = decode_vector( k2 )    
     k1, k2 = subkey( key)   # test this fucntion
                             # against known results       
-    assert k1 == k1_known
-    assert k2 == k2_known
+    assert k1 == k1_known 
+    assert k2 == k2_known 
         
 def cmac_mac_test(test='',key='', m='', t=''):
     """ NIST test vector validation of CMAC output """

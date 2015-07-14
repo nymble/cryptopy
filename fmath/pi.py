@@ -4,11 +4,13 @@
     A large number of digits of 'pi'
     
     pi_string - returns a text version "3.14159 ...
+    
     pi(num_digits) - returns a fractiona representation of pi
                      accurate to num_digits
     
     
-    Paul A. Lambert Copyright 2015
+    Paul A. Lambert - 2015
+    Free. No rights reserved.
 """
 from fractions import Fraction
 
