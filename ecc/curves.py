@@ -4,6 +4,7 @@
   
   Definitions Include Curves from:
     - SECP Fp Curves from SEC 2: Recommended Elliptic Curve Domain Parameters
+      http://www.secg.org/SEC2-Ver-1.0.pdf
     - NIST Fp Curves from FIPS PUB 186-4 (same as selected SECP curves)
     - Brainpool Curves from RFC 5639, March 2010
     - Chinese Commercial Cryptography Administration Office Fp-256
@@ -120,6 +121,7 @@ class NIST_P224( SECP_224r1 ):  # NIST renamed Secp224r1
 
 class SECP_256k1( KoblitzCurveFp ):
     """ Certicom secp256-k1 curve - used in Bitcoin, not used by NIST
+        http://www.secg.org/SEC2-Ver-1.0.pdf
     """
     curveId = 'secp256k1'
     strength = 128
