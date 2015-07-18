@@ -8,7 +8,10 @@
         NIST - http://csrc.nist.gov/publications/nistpubs/800-38B/Updated_CMAC_Examples.pdf
         
         
-    Copyright (c) 2015 by Paul A. Lambert
+    test_aes_cmac.py(c) 2015 by Paul A. Lambert
+        
+    test_aes_cmac.py is licensed under a
+    Creative Commons Attribution 4.0 International License.
 """
 import unittest
 

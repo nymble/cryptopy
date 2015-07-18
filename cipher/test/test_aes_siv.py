@@ -2,16 +2,19 @@
 """ test_aes_siv.py
 
     Tests for AES SIV
-    Copyright (c) 2013 by Paul A. Lambert   
+
+    test_aes_siv.py (c) 2013 by Paul A. Lambert
+
+    test_aes_siv.py is licensed under a
+    Creative Commons Attribution 4.0 International License.
 """
 import unittest
 
 if __name__ == '__main__' and __package__ is None:
     from os import sys, path
     sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))   
-    from aes_siv import siv_encrypt, siv_decrypt
-else:
-    from ..aes_siv import siv_encrypt, siv_decrypt
+
+from aes_siv import siv_encrypt, siv_decrypt, AES_SIV
 
 class TestVectorsRFC5297(unittest.TestCase):
     """ Test Vectors from RFC 5297 """
@@ -63,6 +66,24 @@ class TestVectorsRFC5297(unittest.TestCase):
         iv_ct = siv_encrypt(key, 'a', [])
         pt2 = siv_decrypt(key, iv_ct, [])
         self.assertEqual(  'a', pt2 )
+        
+        
+class Test_AES_SIV_Class(unittest.TestCase):
+    def test_simple(self):
+        key = 'fffefdfcfbfaf9f8f7f6f5f4f3f2f1f0f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff'.decode('hex')
+        aead_cipher = AES_SIV(key)   
+        ad1 = '0011'.decode('hex')
+        ad2 = '1023'.decode('hex')
+        ad = [ad1, ad2 ]
+        message = 'testing 123'
+        cipher_text = aead_cipher.encrypt( message, ad)
+        recovered_plain_text = aead_cipher.decrypt( cipher_text, ad)
+        self.assertEqual( message, recovered_plain_text )
 
+        
+        
+        
+        
+    
 if __name__ == '__main__':
     unittest.main()
