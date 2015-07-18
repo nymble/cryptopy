@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 """ encoding.py
 
-    2015 - Paul A. Lambert
+    encoding.py (c) 2013 by Paul A. Lambert
+    
+    encoding.py is licensed under a
+    Creative Commons Attribution 4.0 International License.
 """
 from __future__ import division   # ensure division returns float value 
 __all__ = ['int_to_string', 'string_to_int', 'b27encode', 'b27decode',

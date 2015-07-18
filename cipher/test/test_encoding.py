@@ -2,7 +2,10 @@
 """ test_encoding.py
 
     
-    Copyright (c) 2015 by Paul A. Lambert   
+    test_encoding.py (c) 2013 by Paul A. Lambert
+
+    test_encoding.py is licensed under a
+    Creative Commons Attribution 4.0 International License.
 """
 import unittest
 from hashlib import sha256

@@ -8,7 +8,10 @@
     
     RFC 4493 - http://www.rfc-editor.org/rfc/rfc4493.txt
     
-    Author: Paul A. Lambert, December 2013
+    aes_cmac.py (c) 2013 by Paul A. Lambert
+
+    aes_cmac.py is licensed under a
+    Creative Commons Attribution 4.0 International License.
 """
 from Crypto.Cipher import AES
 from encoding import int_to_string, string_to_int
