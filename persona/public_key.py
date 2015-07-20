@@ -22,10 +22,9 @@ class PublicKey( Eon ):
             point = keyValue
         else:
             raise 'bad key type'
-        
-        #assert self.group.is_valid( point )
         assert self.group.on_curve( point )
         self.publicKeyValue = point   # keyValue is a Point for ECC
+        
         self.uaid = cipherSuite.hashUaid( self )
     
     def validate( self, data, signature ):

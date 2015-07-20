@@ -2,6 +2,7 @@
 """ ellipticcurve.py
 
     Contains base classes:
+     - EllipticCurveError
      - EllipticCurve
      - EllipticCurveFp
      - Point
@@ -19,6 +20,9 @@
 Paul A. Lambert 2015
 """
 from numbertheory import inverse_mod, square_root_mod_prime
+from cryptopy.cipher.common import string_to_int, int_to_string
+
+from Crypto import Random
 
 class EllipticCurveError(Exception): pass
 
@@ -52,11 +56,11 @@ class EllipticCurveFp(object):
         t1 = square_root_mod_prime( t0, p )
         yR = t1   # it might also be yR = p - t1
         R = self.point( xR, yR )
-        if self.contains_point(R):
+        if self.on_curve(R):
             return R
         yR = p - t1
         R = self.point( xR, yR )
-        if self.contains_point(R):
+        if self.on_curve(R):
             return R
         else:
             EllipticCurveError( "uncompress failed")
@@ -64,8 +68,27 @@ class EllipticCurveFp(object):
     def inverse(self, a):
         """ scalar inversion in Fp - overload for 'p' specific optimizations """
         return inverse_mod(a, self.p)  # this is a generic inverse_mod
-                                  # 7 times faster than pow(a, self.p-2, self.p)
-                     
+                           # 7 times faster than pow(a, self.p-2, self.p)
+                                  
+    def randomScalar(self):
+        """ Random scalar in range """
+        rndfile = Random.new()
+        scalar = string_to_int( rndfile.read(self.coord_size) ) % self.p
+        return scalar
+    
+    def newAsymSecret(self):
+        """ Creation of a asymetric secret for a public key pair
+            For ECC it's usally a random scalar, curve25519 must overload
+        """
+        return self.randomScalar()
+    
+    def make_PublicKey(self, secretScalar):
+        """ Create a public key from a secret key """
+        return secretScalar * self.generator()
+    
+    def is_valid( self, point ):
+        return self.contains_point( point )
+
 
 class Point(object):
     """ An Afine point on an elliptic curve """
@@ -119,30 +142,13 @@ class Point(object):
         return octetstring
     
     def from_octetstring(self,octetstring):
-        """
-        http://tools.ietf.org/html/draft-jivsov-ecc-compact-00 """
+        """ """
         raise "to do"
+        point = self.curve.point
+        return point
     
     def __str__(self):
         if self == self.curve.identity():
             return "IDENTITY"
         return "(%d,%d)" % ( self.x, self.y )    
 
-
-
-def int_to_string( x, padto=None ):
-    """ Convert integer x into a string of bytes, as per X9.62.
-        If 'padto' defined, result is zero padded to this length.
-    """
-    assert x >= 0
-    if x == 0: return chr(0)
-    result = ""
-    while x > 0:
-        q, r = divmod( x, 256 )
-        result = chr( r ) + result
-        x = q
-    if padto:
-        padlen = padto - len(result)
-        assert padlen >= 0
-        result = padlen*chr(0) + result
-    return result
