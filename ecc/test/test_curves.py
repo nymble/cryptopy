@@ -78,10 +78,10 @@ class TestEllipticCurveFp(unittest.TestCase):
  
        
 class TestNistCurves(unittest.TestCase):
-    """ Examples from
-       'Mathematical routines for the NIST prime elliptic curves'
-        April 05, 2010
-        https://www.nsa.gov/ia/_files/nist-routines.pdf
+    """ Example calculations from:
+           'Mathematical routines for the NIST prime elliptic curves'
+            April 05, 2010
+            https://www.nsa.gov/ia/_files/nist-routines.pdf
     """
     def test_NIST_P192(self):
         """ 4.1 Curve P-192
@@ -228,8 +228,48 @@ class TestNistCurves(unittest.TestCase):
         """ 4.4 Curve P-384
             4.4.2 Example calculations
         """
-        p521 = NIST_P384()
-        raise "to do - test P384 using NSA test vectors"
+        c = NIST_P384()
+        # S
+        xS = 0xfba203b81bbd23f2b3be971cc23997e1ae4d89e69cb6f92385dda82768ada415ebab4167459da98e62b1332d1e73cb0e
+        yS = 0x5ffedbaefdeba603e7923e06cdb5d0c65b22301429293376d5c6944e3fa6259f162b4788de6987fd59aed5e4b5285e45
+        S = c.point(xS,yS)
+        # T
+        xT = 0xaacc05202e7fda6fc73d82f0a66220527da8117ee8f8330ead7d20ee6f255f582d8bd38c5a7f2b40bcdb68ba13d81051
+        yT = 0x84009a263fefba7c2c57cffa5db3634d286131afc0fca8d25afa22a7b5dce0d9470da89233cee178592f49b6fecb5092
+        T = c.point(xT,yT)
+        
+        # Full add R = S + T:
+        xR = 0x12dc5ce7acdfc5844d939f40b4df012e68f865b89c3213ba97090a247a2fc009075cf471cd2e85c489979b65ee0b5eed
+        yR = 0x167312e58fe0c0afa248f2854e3cddcb557f983b3189b67f21eee01341e7e9fe67f6ee81b36988efa406945c8804a4b0
+        R = c.point(xR,yR)
+        self.assertEqual( R, S + T )
+        
+        # Full subtract R = S - T:
+        xR = 0x6afdaf8da8b11c984cf177e551cee542cda4ac2f25cd522d0cd710f88059c6565aef78f6b5ed6cc05a6666def2a2fb59
+        yR = 0x7bed0e158ae8cc70e847a60347ca1548c348decc6309f48b59bd5afc9a9b804e7f7876178cb5a7eb4f6940a9c73e8e5e
+        R = c.point(xR,yR)
+        self.assertEqual( R, S - T )
+        
+        # Double R = 2*S:        
+        xR = 0x2a2111b1e0aa8b2fc5a1975516bc4d58017ff96b25e1bdff3c229d5fac3bacc319dcbec29f9478f42dee597b4641504c
+        yR = 0xfa2e3d9dc84db8954ce8085ef28d7184fddfd1344b4d4797343af9b5f9d837520b450f726443e4114bd4e5bdb2f65ddd
+        R = c.point(xR,yR)
+        self.assertEqual( R, 2*S )
+        self.assertEqual( R, S*2 )
+        
+        # Scalar multiply R = dS:
+        d = 0xa4ebcae5a665983493ab3e626085a24c104311a761b5a8fdac052ed1f111a5c44f76f45659d2d111a61b5fdd97583480
+        xR = 0xe4f77e7ffeb7f0958910e3a680d677a477191df166160ff7ef6bb5261f791aa7b45e3e653d151b95dad3d93ca0290ef2
+        yR = 0xac7dee41d8c5f4a7d5836960a773cfc1376289d3373f8cf7417b0c6207ac32e913856612fc9ff2e357eb2ee05cf9667f
+        R = c.point(xR,yR)
+        self.assertEqual( R, d*S )
+        
+        # Joint scalar multiply R = dS + eT (d as above):
+        e = 0xafcf88119a3a76c87acbd6008e1349b29f4ba9aa0e12ce89bcfcae2180b38d81ab8cf15095301a182afbc6893e75385d
+        xR = 0x917ea28bcd641741ae5d18c2f1bd917ba68d34f0f0577387dc81260462aea60e2417b8bdc5d954fc729d211db23a02dc
+        yR = 0x1a29f7ce6d074654d77b40888c73e92546c8f16a5ff6bcbd307f758d4aee684beff26f6742f597e2585c86da908f7186
+        R = c.point(xR,yR)
+        self.assertEqual( R, d*S  + e*T )
         
     def test_NIST_P521(self):
         """ 4.5 Curve P-521
