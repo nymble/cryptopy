@@ -326,14 +326,15 @@ class TestPointUncompression(unittest.TestCase):
     
 class TestAllCurves(unittest.TestCase):
     """ Basic validation of Curve generators """
-    def test_G_times_n(self):
+    def test_n_times_G(self):
         for Curve in smallWeierstrassCurves: # now may work for Edwards 
             c = Curve()
             IDENTITY = c.identity()
             print c.curveId, c.oid
             G = c.generator()
             self.assertEqual( c.n * G, IDENTITY )
-
+        
+            
 class TestCurve25519(unittest.TestCase):
     """ Curve25519 - a Edwards Curve """
     

@@ -21,8 +21,10 @@ class TestPublicKey(unittest.TestCase):
         """ Basic unit test of a PublicKey Pair """
         cipherSuite = Suite_01()
         curve = cipherSuite.Group()
-        point = 55555555555555555555555555 * curve.generator()
-        print curve.generator()
+        G = curve.generator()
+        d = 0xc51e4753afdec1e6b6c6a5b992f43f8dd0c7a8933072708b6522468b2ffb06fd
+        point = d * G # example point from NSA tests
+        self.assertTrue ( curve.on_curve(point) )
         
         pubKey = PublicKey( cipherSuite, point )
    

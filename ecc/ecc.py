@@ -21,16 +21,10 @@ class SmallWeierstrassCurveFp( EllipticCurveFp ):
     """ A Small Wierstrass curve has points on:
             y^2 == x^3 + a*x^2+b  over  GF(p)
     """
-    def on_curve(curve, g):
-        p = curve.p;  a = curve.a;  b = curve.b;  x = g.x;  y = g.y
+    def on_curve(curve, point):
+        p = curve.p;  a = curve.a;  b = curve.b;  x = point.x;  y = point.y
 
-        return  y^2  == x^3 + a*x^2 + b
-    
-    def contains_point(curve, g):
-        """Is the point 'g' on the Small Weierstrass curve"""
-        p = curve.p;  a = curve.a;  b = curve.b;  x = g.x;  y = g.y
-
-        return  (y**2) % p == (x**3 + a*x**2 + b) % p
+        return  (y**2) % p == (x**3 + a*x + b) % p
           
     def add_points(curve, p1, p2):
         """ Add one point to another point (from X9.62 B.3). """
@@ -114,7 +108,7 @@ class TwistedEdwardsCurveFp( EllipticCurveFp ):
     """ A Twisted Edwards curve has points on:
             (a*x**2 + y**2) % p == (1 + d*x**2*y**2) % p
     """       
-    def contains_point(curve, g):
+    def on_curve(curve, g):
         """ Returns true if the point 'g' is on the curve """
         x = g.x; y = g.y; d = curve.d;  a = curve.a;  p = curve.p
         
@@ -172,7 +166,7 @@ class MontgomeryCurveFp( EllipticCurveFp ):
     """ A Montogomery curve has points on:
             y^2 == x^3 + a*x^2 + x  modulo the prime p
     """
-    def contains_point(curve, g):
+    def on_curve(curve, g):
         """ Is the point 'g' on the curve? """
         x = g.x; y = g.y; a = curve.a; p = curve.p; x_sqrd = x*x
         
