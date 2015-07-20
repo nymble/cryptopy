@@ -2,9 +2,17 @@
 """
 """
 import unittest
-from ecc import SmallWeierstrassCurveFp
-from curves import NIST_P192, NIST_P521, BrainPoolP256r1, smallWeierstrassCurves
-from curves import Curve3617, Curve25519
+
+if __name__ == '__main__' and __package__ is None:
+    from os import sys, path
+    p = path.abspath(__file__)  # ./cryptopy/cipher/test/test_aes_cmac.py
+    for i in range(4):  p = path.dirname( p )   # four levels down to project '.'
+    sys.path.append( p )
+    
+from cryptopy.ecc.ecc import SmallWeierstrassCurveFp
+from cryptopy.ecc.curves import NIST_P192, NIST_P224, NIST_P256, NIST_P384, NIST_P521
+from cryptopy.ecc.curves import BrainPoolP256r1, smallWeierstrassCurves
+from cryptopy.ecc.curves import Curve3617, Curve25519
 
 
 class SimpleCurve( SmallWeierstrassCurveFp ):
@@ -72,7 +80,8 @@ class TestEllipticCurveFp(unittest.TestCase):
 class TestNistCurves(unittest.TestCase):
     """ Examples from
        'Mathematical routines for the NIST prime elliptic curves'
-        April 05, 2010        
+        April 05, 2010
+        https://www.nsa.gov/ia/_files/nist-routines.pdf
     """
     def test_NIST_P192(self):
         """ 4.1 Curve P-192
@@ -121,6 +130,107 @@ class TestNistCurves(unittest.TestCase):
         R = c.point(xR,yR)
         self.assertEqual( R, d*S  + e*T )
 
+    def test_NIST_P224(self):
+        """ 4.2 Curve P-224
+            4.2.2 Example calculations
+        """
+        c = NIST_P224()
+        #S
+        xS = 0x6eca814ba59a930843dc814edd6c97da95518df3c6fdf16e9a10bb5b
+        yS = 0xef4b497f0963bc8b6aec0ca0f259b89cd80994147e05dc6b64d7bf22
+        S = c.point(xS,yS)
+        # T
+        xT = 0xb72b25aea5cb03fb88d7e842002969648e6ef23c5d39ac903826bd6d
+        yT = 0xc42a8a4d34984f0b71b5b4091af7dceb33ea729c1a2dc8b434f10c34
+        T = c.point(xT,yT)
+        
+        # Full add R = S + T:
+        xR = 0x236f26d9e84c2f7d776b107bd478ee0a6d2bcfcaa2162afae8d2fd15
+        yR = 0xe53cc0a7904ce6c3746f6a97471297a0b7d5cdf8d536ae25bb0fda70
+        R = c.point(xR,yR)
+        self.assertEqual( R, S + T )
+        
+        # Full subtract R = S - T:
+        xR = 0xdb4112bcc8f34d4f0b36047bca1054f3615413852a7931335210b332
+        yR = 0x90c6e8304da4813878c1540b2396f411facf787a520a0ffb55a8d961
+        R = c.point(xR,yR)
+        self.assertEqual( R, S - T )
+        
+        # Double R = 2*S:        
+        xR = 0xa9c96f2117dee0f27ca56850ebb46efad8ee26852f165e29cb5cdfc7
+        yR = 0xadf18c84cf77ced4d76d4930417d9579207840bf49bfbf5837dfdd7d
+        R = c.point(xR,yR)
+        self.assertEqual( R, 2*S )
+        self.assertEqual( R, S*2 )
+        
+        # Scalar multiply R = dS:
+        d = 0xa78ccc30eaca0fcc8e36b2dd6fbb03df06d37f52711e6363aaf1d73b
+        xR = 0x96a7625e92a8d72bff1113abdb95777e736a14c6fdaacc392702bca4
+        yR = 0x0f8e5702942a3c5e13cd2fd5801915258b43dfadc70d15dbada3ed10
+        R = c.point(xR,yR)
+        self.assertEqual( R, d*S )
+        
+        # Joint scalar multiply R = dS + eT (d as above):
+        e = 0x54d549ffc08c96592519d73e71e8e0703fc8177fa88aa77a6ed35736
+        xR = 0xdbfe2958c7b2cda1302a67ea3ffd94c918c5b350ab838d52e288c83e
+        yR = 0x2f521b83ac3b0549ff4895abcc7f0c5a861aacb87acbc5b8147bb18b
+        R = c.point(xR,yR)
+        self.assertEqual( R, d*S  + e*T )
+        
+    def test_NIST_P256(self):
+        """ 4.3 Curve P-256
+            4.3.2 Example calculations
+        """
+        c = NIST_P256()
+        #S
+        xS = 0xde2444bebc8d36e682edd27e0f271508617519b3221a8fa0b77cab3989da97c9
+        yS = 0xc093ae7ff36e5380fc01a5aad1e66659702de80f53cec576b6350b243042a256
+        S = c.point(xS,yS)
+        # T
+        xT = 0x55a8b00f8da1d44e62f6b3b25316212e39540dc861c89575bb8cf92e35e0986b
+        yT = 0x5421c3209c2d6c704835d82ac4c3dd90f61a8a52598b9e7ab656e9d8c8b24316
+        T = c.point(xT,yT)
+        
+        # Full add R = S + T:
+        xR = 0x72b13dd4354b6b81745195e98cc5ba6970349191ac476bd4553cf35a545a067e
+        yR = 0x8d585cbb2e1327d75241a8a122d7620dc33b13315aa5c9d46d013011744ac264
+        R = c.point(xR,yR)
+        self.assertEqual( R, S + T )
+        
+        # Full subtract R = S - T:
+        xR = 0xc09ce680b251bb1d2aad1dbf6129deab837419f8f1c73ea13e7dc64ad6be6021
+        yR = 0x1a815bf700bd88336b2f9bad4edab1723414a022fdf6c3f4ce30675fb1975ef3
+        R = c.point(xR,yR)
+        self.assertEqual( R, S - T )
+        
+        # Double R = 2*S:        
+        xR = 0x7669e6901606ee3ba1a8eef1e0024c33df6c22f3b17481b82a860ffcdb6127b0
+        yR = 0xfa878162187a54f6c39f6ee0072f33de389ef3eecd03023de10ca2c1db61d0c7
+        R = c.point(xR,yR)
+        self.assertEqual( R, 2*S )
+        self.assertEqual( R, S*2 )
+        
+        # Scalar multiply R = dS:
+        d = 0xc51e4753afdec1e6b6c6a5b992f43f8dd0c7a8933072708b6522468b2ffb06fd
+        xR = 0x51d08d5f2d4278882946d88d83c97d11e62becc3cfc18bedacc89ba34eeca03f
+        yR = 0x75ee68eb8bf626aa5b673ab51f6e744e06f8fcf8a6c0cf3035beca956a7b41d5
+        R = c.point(xR,yR)
+        self.assertEqual( R, d*S )
+        
+        # Joint scalar multiply R = dS + eT (d as above):
+        e = 0xd37f628ece72a462f0145cbefe3f0b355ee8332d37acdd83a358016aea029db7
+        xR = 0xd867b4679221009234939221b8046245efcf58413daacbeff857b8588341f6b8
+        yR = 0xf2504055c03cede12d22720dad69c745106b6607ec7e50dd35d54bd80f615275
+        R = c.point(xR,yR)
+        self.assertEqual( R, d*S  + e*T )
+    
+    def test_NIST_P384(self):
+        """ 4.4 Curve P-384
+            4.4.2 Example calculations
+        """
+        p521 = NIST_P384()
+        raise "to do - test P384 using NSA test vectors"
+        
     def test_NIST_P521(self):
         """ 4.5 Curve P-521
             4.5.2 Example calculations
