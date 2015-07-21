@@ -21,7 +21,6 @@ Paul A. Lambert 2015
 """
 from numbertheory import inverse_mod, square_root_mod_prime
 from cryptopy.cipher.common import string_to_int, int_to_string
-
 from Crypto import Random
 
 class EllipticCurveError(Exception): pass
@@ -41,17 +40,14 @@ class EllipticCurveFp(object):
         """ Return the ECC generator point G """
         return self.point(self.xG, self.yG)
     
-    def uncompress(self, xR):
+    def xxuncompress(self, xR):
         """ Return a new point R from just x-coordinate xR
             Note - this is not ANSI or SEC format 'x' with
                    leading 2 bits holding (2 + yR mod 2)
             yR will be incorrect for 50% of runs,
             but ECDH will still have correct answer
         """
-        a = self.a
-        b = self.b
-        p = self.p
-        #t0 = ( xR*xR*xR + a*xR + b ) % p
+        a = self.a; b = self.b; p = self.p
         t0 = ((xR*xR + a)*xR + b ) % p
         t1 = square_root_mod_prime( t0, p )
         yR = t1   # it might also be yR = p - t1
@@ -129,19 +125,20 @@ class Point(object):
         """Return a new point that is twice the old """   
         return self.curve.double_point(self)
 
-    def encode(self, encode='raw'):
+    # xx - remove encoding from point since ther are several ways ...
+    def xxencode(self, encode='raw'):
         """ Encode a point (usually for public keys) """
         if encode == 'raw':   # encode both x and y sequentially
             return int_to_string(self.x, padto=self.curve.coord_size) + int_to_string(self.y, padto=self.curve.coord_size)
         else:
             raise Exception('undefined encode')
                 
-    def to_octetstring(self):
+    def xxto_octetstring(self):
         """ Encode point as x and y octetstring """
         octetstring = int_to_string(self.x) + int_to_string(self.y)
         return octetstring
     
-    def from_octetstring(self,octetstring):
+    def xxfrom_octetstring(self,octetstring):
         """ """
         raise "to do"
         point = self.curve.point

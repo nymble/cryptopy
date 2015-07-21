@@ -25,8 +25,12 @@ class TestPublicKey(unittest.TestCase):
         d = 0xc51e4753afdec1e6b6c6a5b992f43f8dd0c7a8933072708b6522468b2ffb06fd
         point = d * G # example point from NSA tests
         self.assertTrue ( curve.on_curve(point) )
-        
+      
         pubKey = PublicKey( cipherSuite, point )
+        
+        self.assertTrue( len(pubKey.uaid)==16 )
+        
+
    
         
 class TestPublicKeyPair(unittest.TestCase):

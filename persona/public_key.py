@@ -25,7 +25,8 @@ class PublicKey( Eon ):
         assert self.group.on_curve( point )
         self.publicKeyValue = point   # keyValue is a Point for ECC
         
-        self.uaid = cipherSuite.hashUaid( self )
+        publicKeyOctets = self.to_octets()  
+        self.uaid = cipherSuite.hashUaid( publicKeyOctets )
     
     def validate( self, data, signature ):
         """ Validate a signature using this public key."""
@@ -35,6 +36,10 @@ class PublicKey( Eon ):
         """ Decrypts the cipherText and returns a opaque octet string """
         plainText = self.cipherSuite.pubKeyDecrypt( self.publicKeyValue, cipherText )
         return plainText
+    
+    def to_octets( self ):
+        """ Convert public key to an octet string """
+        return self.cipherSuite.pub_key_to_octets( self.publicKeyValue )
     
    
 class PublicKeyPair( PublicKey ):
