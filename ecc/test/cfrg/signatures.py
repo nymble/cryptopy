@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# cfrg/signatures.py version 2015.07.23
+# cfrg/signatures.py version 2015.08.04
 # Daniel J. Bernstein
 
 # This Python script tries generating and verifying random signatures for
@@ -39,6 +39,7 @@
 # 2015.07.22: brown: introduce and use truncate function
 # 2015.07.23: ladd: switch to eddsa encoding
 # 2015.07.23: encodepoint and decodepoint are no longer scheme-specific
+# 2015.08.04: ford: import
 
 
 import hashlib
@@ -47,7 +48,6 @@ import random
 b = 256
 q = 2**255 - 19
 l = 2**252 + 27742317777372353535851937790883648493
-
   
 def expmod(b,e,m):
   if e == 0: return 1
@@ -56,25 +56,7 @@ def expmod(b,e,m):
   return t
   
 def inv(x):
-  return inverse_mod(x,q)
-
-def inverse_mod( a, m ):
-    """Inverse of a mod m."""   
-    if a < 0 or m <= a: a = a % m   
-    # From Ferguson and Schneier, roughly:
-    
-    c, d = a, m
-    uc, vc, ud, vd = 1, 0, 0, 1
-    while c != 0:
-        q, c, d = divmod( d, c ) + ( c, )
-        uc, vc, ud, vd = ud - q*uc, vd - q*vc, uc, vc
-    
-    # At this point, d is the GCD, and ud*a+vd*m = d.
-    # If d == 1, this means that ud is a inverse.
-    
-    assert d == 1
-    if ud > 0: return ud
-    else: return ud + m
+  return expmod(x,q-2,q)
 
 d = -121665 * inv(121666)
 I = expmod(2,(q-1)/4,q)
@@ -138,10 +120,11 @@ assert expmod(I,2,q) == q-1
 assert isoncurve(B)
 assert scalarmult(B,l) == (0,1)
 
-for scheme in ['brown','eddsa','hamburg','ladd','liusvaara']:
+for scheme in ['brown','eddsa','ford','hamburg','ladd','liusvaara']:
 
   brown = (scheme == 'brown')
   eddsa = (scheme == 'eddsa')
+  ford = (scheme == 'ford')
   hamburg = (scheme == 'hamburg')
   ladd = (scheme == 'ladd')
   liusvaara = (scheme == 'liusvaara')
@@ -156,6 +139,10 @@ for scheme in ['brown','eddsa','hamburg','ladd','liusvaara']:
   if eddsa or ladd or liusvaara:
     def H(m):
       return hashlib.sha512(m).digest()
+  if ford:
+    def H(m):
+      return hashlib.sha512(m).digest()  # XXX pretend this is SHAKE128(M,512)
+      # return somelib.shake128(m,512).digest()  # what we want
 
   if eddsa or hamburg or liusvaara:
     def prehash(m):
@@ -197,6 +184,8 @@ for scheme in ['brown','eddsa','hamburg','ladd','liusvaara']:
         a -= a % 8
         a %= 2**(b-2)
         a += 2**(b-2)
+      if ford:
+        return a,(sk + 'r')
       return a,sk[b/8:]
   
     def secretscalar(sk):
@@ -222,6 +211,8 @@ for scheme in ['brown','eddsa','hamburg','ladd','liusvaara']:
     if liusvaara:
       m = selfdelim(hashid) + selfdelim(context) + selfdelim(prehash(m))
       rinput = '\x02' + selfdelim(seed) + m
+    if ford:
+      rinput = m + seed + 'r'   # should pad to sponge rate
 
     if hamburg:
       r = prf(sk,rinput)
@@ -239,12 +230,14 @@ for scheme in ['brown','eddsa','hamburg','ladd','liusvaara']:
       hinput = 'CHAL' + context + pk + R + m
     if liusvaara:
       hinput = '\x03' + encodeint(b,16) + R + pk + m
+    if ford:
+      hinput = m + R + pk + 'c'
 
     h = H(hinput)
     inth = decodeint(h)
     if brown:
       S = ((truncate(inth) + a * decodeint(R)) * linv(r)) % l
-    if eddsa:
+    if eddsa or ford:
       S = (r + inth * a) % l
     if hamburg or ladd or liusvaara:
       S = (r - inth * a) % l
@@ -275,13 +268,15 @@ for scheme in ['brown','eddsa','hamburg','ladd','liusvaara']:
       if liusvaara:
         m = selfdelim(hashid) + selfdelim(context) + selfdelim(prehash(m))
         hinput = '\x03' + encodeint(b,16) + encodepoint(R) + pk + m
+      if ford:
+        hinput = m + encodepoint(R) + pk + 'c'
       h = decodeint(H(hinput))
   
       if brown:
         h = truncate(h)
         h2 = decodeint(encodepoint(R))
         if scalarmult(R,S) == edwards(scalarmult(B,h),scalarmult(A,h2)): return
-      if eddsa:
+      if eddsa or ford:
         if scalarmult(B,S) == edwards(R,scalarmult(A,h)): return
       if ladd or liusvaara:
         if R == edwards(scalarmult(B,S),scalarmult(A,h)): return
