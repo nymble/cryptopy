@@ -1,49 +1,14 @@
 #!/usr/bin/env python
 
+
+# Derivered from:
 # cfrg/signatures.py version 2015.08.04
 # Daniel J. Bernstein
-
-# This Python script tries generating and verifying random signatures for
-# five specific signature schemes labeled 'brown', 'eddsa', 'hamburg',
-# 'ladd', and 'liusvaara'. The script is designed to help the reader see
-# the similarities and differences between the five schemes: the steps are
-# merged to the extent possible, notation is unified, common subroutines
-# are extracted, etc.
-# 
-# The script is loosely based on existing scripts for Ed25519. For 'eddsa'
-# the script includes a check that these functions match a separately
-# generated example of Ed25519 signing a SHA-256 hash of a message (i.e.,
-# SHA-256-Ed25519-SHA-512). The mix of SHA-256 for the prehash and SHA-512
-# for the internal hash is meant to show clearly how the two different
-# hashes are used. SHA-256 is also used as the prehash for 'hamburg' and
-# 'liusvaara', while 'brown' and 'ladd' use parallel hashes instead of
-# prehashing.
-# 
-# This script tries to convey the spirit of the signature proposals
-# submitted to CFRG. However, those proposals are missing many important
-# details that I had to fill in (e.g., a choice of 320-bit PRF), and also
-# contain various errors that can be resolved in different ways (e.g., a
-# missing negation), so it's unlikely that all the choices in the script
-# are matching the choices that the proposers would have made. I'll try to
-# keep the script rapidly updated in response to comments.
-# 
-# Of course, this script is not suitable for serious use: it hasn't been
-# audited or properly tested, it doesn't run in constant time, it's very
-# slow, etc.
-#
-# Changes:
-# 2015.07.20: initial release
-# 2015.07.21: liusvaara: length encoding is unsigned LEB128
-# 2015.07.22: brown: internal hash H is sha384
-# 2015.07.22: brown: eliminate brownhashint; use decodeint instead
-# 2015.07.22: brown: introduce and use truncate function
-# 2015.07.23: ladd: switch to eddsa encoding
-# 2015.07.23: encodepoint and decodepoint are no longer scheme-specific
-# 2015.08.04: ford: import
 
 
 import hashlib
 import random
+
 
 b = 256
 q = 2**255 - 19

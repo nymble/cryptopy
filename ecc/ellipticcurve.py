@@ -84,7 +84,12 @@ class EllipticCurveFp(object):
     
     def is_valid( self, point ):
         return self.contains_point( point )
-
+    
+    def __contains__( self, point ):
+        """ support syntax using 'in', e.g.
+                if point in curve:
+        """
+        return self.contains_point( point )
 
 class Point(object):
     """ An Afine point on an elliptic curve """

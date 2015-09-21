@@ -13,7 +13,7 @@ from hashlib import ripemd160
 
 
 def uaid( cipherSuiteId, publicKeyOctetString, Hash=sha256, lenUaid=16 )
-        """ Calcuate a  from an octetstring holding the public key
+        """ Calcuate a UAID from an octetstring holding the public key
             The format of the publicKeyOctets may be compresed or not
             based on the CipherSuite PubKeyEncode.
         """

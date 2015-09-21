@@ -31,7 +31,6 @@ class TestPublicKey(unittest.TestCase):
         self.assertTrue( len(pubKey.uaid)==16 )
         
 
-   
         
 class TestPublicKeyPair(unittest.TestCase):
     """  """
@@ -40,8 +39,23 @@ class TestPublicKeyPair(unittest.TestCase):
         cipherSuite = Suite_01()
         keyPair1 = PublicKeyPair( cipherSuite )
         keyPair2 = PublicKeyPair( cipherSuite )
+        print keyPair1.publicKeyValue
+        print keyPair1.group
+        P = keyPair1.publicKeyValue
 
+class TestTIP(unittest.TestCase):
+    """  """
+    def test_tip(self):
+        """ example sequence """
+        cipherSuite = Suite_01()
+        
+        alice = PublicKeyPair( cipherSuite )
+        bob = PublicKeyPair( cipherSuite )
 
+        Pa = alice.publicKeyValue
+        Pb = bob.publicKeyValue
+        #r_a = alice.randomElement()
+        
 
 if __name__ == '__main__':
     unittest.main()

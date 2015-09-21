@@ -10,7 +10,7 @@ Refs:   Extension and repackaging of Peter Pearson's open source ECC
       
 
 20131201 refactored
-2015  projections and new curve type changes, midway in refactor .... 
+2015  projections and new curve type changes
 
 Paul A. Lambert 2015
 """
@@ -111,8 +111,8 @@ class TwistedEdwardsCurveFp( EllipticCurveFp ):
     def on_curve(curve, g):
         """ Returns true if the point 'g' is on the curve """
         x = g.x; y = g.y; d = curve.d;  a = curve.a;  p = curve.p
-        
-        return  (a*x**2 + y**2) % p == (1 + d*x**2*y**2) % p
+
+        return  (a*x**2 + y*y - 1 - d*x*x*y*y)  % p == 0
             
     def add_points(curve, p1, p2):
         """ Add two points on the curve """
@@ -121,7 +121,7 @@ class TwistedEdwardsCurveFp( EllipticCurveFp ):
         
         # Edwards curve addition 
         x3 = ( (x1*y2+x2*y1) * inv(1+d*x1*x2*y1*y2) ) % p
-        y3 = ( (y1*y2-a*x1*x2) * inv(1-d*x1*x2*y1*y2) ) % p       
+        y3 = ( (y1*y2-a*x1*x2) * inv(1-d*x1*x2*y1*y2) ) % p    # ??? a=1 or a=-1 for Edwards?
         return curve.point(x3, y3)
         
     def negate(curve, p):
@@ -164,7 +164,7 @@ class EdwardsCurveFp( TwistedEdwardsCurveFp ):
      
 class MontgomeryCurveFp( EllipticCurveFp ):
     """ A Montogomery curve has points on:
-            y^2 == x^3 + a*x^2 + x  modulo the prime p
+            y**2 == x**3 + a*x**2 + x  modulo the prime p
     """
     def on_curve(curve, g):
         """ Is the point 'g' on the curve? """

@@ -5,25 +5,27 @@
 """
 __all__ = ['PublicKey', 'PublicKeyPair']
 
-class Eon: pass # serialization stubbed for now
+class Eon: pass # serialization stubbed
 
 class PublicKey( Eon ):
     """ Public keys are assoicated with a CipherSuite that determines
         the algorithms and encodings used with the key.
     """
     def __init__( self, cipherSuite, keyValue ):
-        """ New public key from point or octetstring """
+        """ New public key from point or octetstring
+        """
         self.cipherSuite = cipherSuite
         self.group = cipherSuite.Group()
         
         if keyValue.__class__ == 'Str':
-            point = cipherSuite.pub_key_from_octets( keyValue )
+            pubKey = cipherSuite.pub_key_from_octets( keyValue )
         elif keyValue.__class__.__name__ == 'Point' :
-            point = keyValue
+            pubKey = keyValue
         else:
-            raise 'bad key type'
-        assert self.group.on_curve( point )
-        self.publicKeyValue = point   # keyValue is a Point for ECC
+            raise 'unknown public key value type'
+        
+        assert self.group.on_curve( pubKey ) # only ECC currently, change to is_valid later
+        self.publicKeyValue = pubKey
         
         publicKeyOctets = self.to_octets()  
         self.uaid = cipherSuite.hashUaid( publicKeyOctets )
@@ -62,7 +64,7 @@ class PublicKeyPair( PublicKey ):
     def encrypt( self, plainText ):
         """ Encrypt the plainText and returns an opaque octet string
         """
-        cipherText = self.cipherSuite.pubKeyDecrypt( self.__secret, plainText )
+        cipherText = self.cipherSuite.pubKeyEncrypt( self.__secret, plainText )
         return cipherText        
            
            

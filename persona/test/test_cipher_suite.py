@@ -29,5 +29,29 @@ class TestSuite01(unittest.TestCase):
         assert True
 
 
+class Test_CipherSuite(unittest.TestCase):
+    """ Test cipher suite object class """
+    def test_CipherSuite_object(self):
+        """  """
+        # base class
+        c = CipherSuite()
+        print c.name
+        c = PMP01() # sub class of CipherSuite
+        print 'name:', c.name
+        print 'id:', c.id
+    
+    def test_CipherSuite_sign(self):
+        cipherSuite = PMP01()
+        text = 'test of the cipher suite signature abstraction'
+        print ' --- {0} ---'.format(text)
+        signatureOctets = cipherSuite.sign(text)
+        print 'cipher suite:', cipherSuite.name
+        print 'signature:',signatureOctets
+    
+    def test_CipherSuite_public_key(self):
+        pass
+
+
+
 if __name__ == '__main__':
     unittest.main()
