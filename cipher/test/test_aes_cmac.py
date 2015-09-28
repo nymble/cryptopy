@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
 """ test_aes_cmac.py
 
     Tests for AES CMAC from NIST 800-38B

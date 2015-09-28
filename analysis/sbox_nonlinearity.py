@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
 """  crypto.cipher.sbox_nonlin
 
     sbox non-linearity analysis using walsh functions

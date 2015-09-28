@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
 """ pi.py
     
     A large number of digits of 'pi'

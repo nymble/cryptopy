@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
 """ curves.py
     
   Elliptic Curve Cryptography Parameter Definitions

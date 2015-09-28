@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
 """ encoding.py
 
     encoding.py (c) 2013 by Paul A. Lambert

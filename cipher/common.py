@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
 """ cryptopy.cipher.common
 
     Common utility routines for crypto modules

@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
 """ galoisfield.py
 
     Support for math operations module prime p, GF(p)
