@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
 """ test_galoisfields.py
     Unit tests for overloading of: +, -, /, ^ for modular math on GFp(p)
     

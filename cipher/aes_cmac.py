@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
 """ aes_cmac.py
 
     NIST, Special Publication 800-38B, "Recommendation for

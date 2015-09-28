@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
 """ sbox_analysis.py
 
     AES and SMS4 Sbox Analysis - a simple analysis of Sboxs that determines
