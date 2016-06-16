@@ -9,6 +9,7 @@
         compute the hexadecimal representation R of
         pi*2**1120 and divide it into 7 segments of 40 hexadecimal
         symbols, followed by a 'Remainder'
+        
     
     Paul A. Lambert 2015 
 """

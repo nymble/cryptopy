@@ -1,5 +1,8 @@
 #!/usr/bin/env python
-"""
+""" test_sec256k1.py
+    
+    Unit tests for sec256k1
+    
 """
 import unittest
 
