@@ -131,14 +131,12 @@ class Suite_01( CipherSuite ):
     AeadCipher = AES_SIV
     
     
-    
 def BitcoinKeyHash( object ):
-    print 'overloaded'
     pass # stubbed
 
 
 class Bitcoin_Suite( CipherSuite ):
-    """ A CipherSUite compatible with Bitcoin """
+    """ A CipherSuite compatible with Bitcoin """
     id = '\01\02'
     Group = SECP_256k1
     Hash  = SHA256

@@ -9,7 +9,7 @@
 #   2008.11.14: Use pow( base, exponent, modulus ) for modular_exp.
 #               Make gcd and lcm accept arbitrarly many arguments.
 
-# http://www.dkrypt.com/home/ecc
+# reference  http://www.dkrypt.com/home/ecc
 
 import math
 import types
