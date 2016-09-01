@@ -15,7 +15,7 @@ if __name__ == '__main__' and __package__ is None:
     sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))   
     from encoding import b27encode, b27decode
 else:
-    from ..encoding import b27encode, b27encode
+    from ..encoding import b27encode, b27decode
 
 class TestEncode(unittest.TestCase):
     """ """
