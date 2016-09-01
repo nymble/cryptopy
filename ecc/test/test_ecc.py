@@ -1,11 +1,19 @@
 #!/usr/bin/env python
-"""
+""" test_ecc.py
+    Unit tests for ecc routines.
 """
 import unittest
-from ecc import SmallWeierstrassCurveFp
-from curves import NIST_P192, NIST_P521, BrainPoolP256r1, smallWeierstrassCurves
-from curves import Curve3617, Curve25519
 
+# cruft required to import correctly without full install
+if __name__ == '__main__' and __package__ is None:
+    from os import sys, path
+    p = path.abspath(__file__)  # ./cryptopy/persona/test/test_cipher_suite.py
+    for i in range(4):  p = path.dirname( p )   # four levels down to project '.'
+    sys.path.append( p )
+    
+from cryptopy.ecc.ecc import SmallWeierstrassCurveFp
+from cryptopy.ecc.curves import NIST_P192, NIST_P521, BrainPoolP256r1, smallWeierstrassCurves
+from cryptopy.ecc.curves import Curve3617, Curve25519
 
 class SimpleCurve( SmallWeierstrassCurveFp ):
     """ Simple test curve y**2 == x**2+x**2+1 mod 23"""
@@ -171,7 +179,7 @@ class TestPointUncompression(unittest.TestCase):
     def test_ned_point(self):
         x = 0x29d54ba5bd599041326f84ab894bc1c0a4d9a8474b4b9cf64640c71f8e3bbb34
         curve = BrainPoolP256r1()
-        Q = curve.uncompress(x)
+        #Q = curve.uncompress(x) ##<-------------------------------------------------------------------------------
            
     
 class TestAllCurves(unittest.TestCase):

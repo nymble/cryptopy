@@ -1,8 +1,11 @@
-""" crypto.common
+""" cryptopy.cipher.common
+
     Common utility routines for crypto modules
 
-    Copyright (c) 2002 by Paul A. Lambert
-    Read LICENSE.txt for license information.
+    common.py (c) 2002 by Paul A. Lambert
+
+    common.py is licensed under a
+    Creative Commons Attribution 4.0 International License.
 """
 
 def xor(a,b):

@@ -4,6 +4,7 @@
   
   Definitions Include Curves from:
     - SECP Fp Curves from SEC 2: Recommended Elliptic Curve Domain Parameters
+      http://www.secg.org/SEC2-Ver-1.0.pdf
     - NIST Fp Curves from FIPS PUB 186-4 (same as selected SECP curves)
     - Brainpool Curves from RFC 5639, March 2010
     - Chinese Commercial Cryptography Administration Office Fp-256
@@ -68,7 +69,7 @@
     
     Paul A. Lambert, December 2013
 """
-from ecc import SmallWeierstrassCurveFp, KoblitzCurveFp, EdwardsCurveFp, MontgomeryCurveFp
+from ecc import SmallWeierstrassCurveFp, KoblitzCurveFp, EdwardsCurveFp, TwistedEdwardsCurveFp, MontgomeryCurveFp
 import sys, inspect
 
 class SECP_192r1( SmallWeierstrassCurveFp ):
@@ -120,6 +121,7 @@ class NIST_P224( SECP_224r1 ):  # NIST renamed Secp224r1
 
 class SECP_256k1( KoblitzCurveFp ):
     """ Certicom secp256-k1 curve - used in Bitcoin, not used by NIST
+        http://www.secg.org/SEC2-Ver-1.0.pdf
     """
     curveId = 'secp256k1'
     strength = 128
@@ -317,12 +319,9 @@ class GOSTmsg05975te( TwistedEdwardsCurveFp ):
         http://www.ietf.org/mail-archive/web/cfrg/current/msg05975.html
         CryptoPro proposal, one of three, to http://tc26.ru/en/
         eu^2 + v^2 = 1 + du^2v^2  versus    a*x**2 + y**2 == 1 + d*x**2 * y**2
-        We denote the total number of points on the curve as n
-        prime subgroup prime order as q.
-        The curve has been examined to be secure against MOV-attacks
-        (thus it can be believed to be DDH-secure)
-        and to satisfy CM-security requirements.
-        twisted curve points group order
+        We denote the total number of points on the curve as n prime subgroup prime order as q.
+        The curve has been examined to be secure against MOV-attacks (thus it can be believed to be DDH-secure)
+        and to satisfy CM-security requirements. twisted curve points group order
         has a prime factor of:
         0x40000000000000000000000000000000000000000000000000000000000000003673245b9af954ffb3cc5600aeb8afd33712561858965ed96b9dc310b80fdaf7
         while the other factor is equal to 4.
@@ -444,7 +443,7 @@ class BrainPoolP160r1( SmallWeierstrassCurveFp ):
     n  = 0xE95E4A5F737059DC60DF5991D45029409E60FC09
     h  = 1
     
-    seed_p = 0x3243F6A8885A308D313198A2E03707344A409382  # Seed_p_160
+    seed_p = 0x3243F6A8885A308D313198A2E03707344A409382   # Seed_p_160
     seed_ab = 0x2B7E151628AED2A6ABF7158809CF4F3C762E7160  # Seed_ab_160
 
 
