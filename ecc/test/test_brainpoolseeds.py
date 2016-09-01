@@ -66,7 +66,7 @@ def brainpool_seeds(num_seeds=7, seed_bits=160):
 
 def brainPoolRequirements( curve ):
     """ Brainpool cryptographic requirements on the defined curves
-        Not complete yet ... move to tests
+        Not complete yet ...
     """
     a = curve.a;  b = curve.b;  p = curve.p
     assert  p > 3
