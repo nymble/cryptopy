@@ -270,6 +270,7 @@ class MontgomeryCurveFp( EllipticCurveFp ):
         return (x_2 * (z_2**(p - 1))) % p
 
 def cswap(x2, x3, bit):
+    """ Swap routine used by Montgomery Ladder """
     dummy = bit * (x2 - x3)
     x2 = x2 - dummy
     x3 = x3 + dummy
