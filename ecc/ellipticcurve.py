@@ -2,7 +2,6 @@
 """ ellipticcurve.py
 
     Contains base classes:
-     - EllipticCurveError
      - EllipticCurve
      - EllipticCurveFp
      - Point
@@ -20,8 +19,6 @@
 Paul A. Lambert 2015
 """
 from numbertheory import inverse_mod, square_root_mod_prime
-from cryptopy.cipher.common import string_to_int, int_to_string
-from Crypto import Random
 
 class EllipticCurveError(Exception): pass
 
@@ -40,23 +37,26 @@ class EllipticCurveFp(object):
         """ Return the ECC generator point G """
         return self.point(self.xG, self.yG)
     
-    def xxuncompress(self, xR):
+    def uncompress(self, xR):
         """ Return a new point R from just x-coordinate xR
             Note - this is not ANSI or SEC format 'x' with
                    leading 2 bits holding (2 + yR mod 2)
             yR will be incorrect for 50% of runs,
             but ECDH will still have correct answer
         """
-        a = self.a; b = self.b; p = self.p
+        a = self.a
+        b = self.b
+        p = self.p
+        #t0 = ( xR*xR*xR + a*xR + b ) % p
         t0 = ((xR*xR + a)*xR + b ) % p
         t1 = square_root_mod_prime( t0, p )
         yR = t1   # it might also be yR = p - t1
         R = self.point( xR, yR )
-        if self.on_curve(R):
+        if self.contains_point(R):
             return R
         yR = p - t1
         R = self.point( xR, yR )
-        if self.on_curve(R):
+        if self.contains_point(R):
             return R
         else:
             EllipticCurveError( "uncompress failed")
@@ -64,32 +64,8 @@ class EllipticCurveFp(object):
     def inverse(self, a):
         """ scalar inversion in Fp - overload for 'p' specific optimizations """
         return inverse_mod(a, self.p)  # this is a generic inverse_mod
-                           # 7 times faster than pow(a, self.p-2, self.p)
-                                  
-    def randomScalar(self):
-        """ Random scalar in range """
-        rndfile = Random.new()
-        scalar = string_to_int( rndfile.read(self.coord_size) ) % self.p
-        return scalar
-    
-    def newAsymSecret(self):
-        """ Creation of a asymetric secret for a public key pair
-            For ECC it's usally a random scalar, curve25519 must overload
-        """
-        return self.randomScalar()
-    
-    def make_PublicKey(self, secretScalar):
-        """ Create a public key from a secret key """
-        return secretScalar * self.generator()
-    
-    def is_valid( self, point ):
-        return self.contains_point( point )
-    
-    def __contains__( self, point ):
-        """ support syntax using 'in', e.g.
-                if point in curve:
-        """
-        return self.contains_point( point )
+                                  # 7 times faster than pow(a, self.p-2, self.p)
+                     
 
 class Point(object):
     """ An Afine point on an elliptic curve """
@@ -130,27 +106,43 @@ class Point(object):
         """Return a new point that is twice the old """   
         return self.curve.double_point(self)
 
-    # xx - remove encoding from point since ther are several ways ...
-    def xxencode(self, encode='raw'):
+    def encode(self, encode='raw'):
         """ Encode a point (usually for public keys) """
         if encode == 'raw':   # encode both x and y sequentially
             return int_to_string(self.x, padto=self.curve.coord_size) + int_to_string(self.y, padto=self.curve.coord_size)
         else:
             raise Exception('undefined encode')
                 
-    def xxto_octetstring(self):
+    def to_octetstring(self):
         """ Encode point as x and y octetstring """
         octetstring = int_to_string(self.x) + int_to_string(self.y)
         return octetstring
     
-    def xxfrom_octetstring(self,octetstring):
-        """ """
+    def from_octetstring(self,octetstring):
+        """
+        http://tools.ietf.org/html/draft-jivsov-ecc-compact-00 """
         raise "to do"
-        point = self.curve.point
-        return point
     
     def __str__(self):
         if self == self.curve.identity():
             return "IDENTITY"
         return "(%d,%d)" % ( self.x, self.y )    
 
+
+
+def int_to_string( x, padto=None ):
+    """ Convert integer x into a string of bytes, as per X9.62.
+        If 'padto' defined, result is zero padded to this length.
+    """
+    assert x >= 0
+    if x == 0: return chr(0)
+    result = ""
+    while x > 0:
+        q, r = divmod( x, 256 )
+        result = chr( r ) + result
+        x = q
+    if padto:
+        padlen = padto - len(result)
+        assert padlen >= 0
+        result = padlen*chr(0) + result
+    return result
