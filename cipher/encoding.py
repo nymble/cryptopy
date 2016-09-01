@@ -5,7 +5,7 @@
 """
 from __future__ import division   # ensure division returns float value 
 __all__ = ['int_to_string', 'string_to_int', 'b27encode', 'b27decode',
-           'b85encode', 'b85decode', 'b84encode', 'b84decode']
+           'b85encode', 'b85decode', 'b94encode', 'b94decode']
 
 
 def int_to_string( long_int, padto=None ):
