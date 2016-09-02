@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-"""
+""" test_nist_curves.py
+
+    
 """
 import unittest
 
@@ -9,71 +11,8 @@ if __name__ == '__main__' and __package__ is None:
     for i in range(4):  p = path.dirname( p )   # four levels down to project '.'
     sys.path.append( p )
     
-from cryptopy.ecc.ecc import SmallWeierstrassCurveFp
-from cryptopy.ecc.curves import NIST_P192, NIST_P521, BrainPoolP256r1, smallWeierstrassCurves
-from cryptopy.ecc.curves import Curve3617, Curve25519
 
-class SimpleCurve( SmallWeierstrassCurveFp ):
-    """ Simple test curve y**2 == x**2+x**2+1 mod 23"""
-    p = 23
-    a = 1
-    b = 1
-    n = 7
-    
-
-class TestEllipticCurveFp(unittest.TestCase):
-    """ Extended from Peter Pearson's ecc package
-        Test basic SmallWeierstrassCurveFp math
-    """
-    def test_simple(self):       
-        c = SimpleCurve()
-        IDENTITY = c.IDENTITY
-        # basic operations
-        g = c.point(3,10)  # make a point
-        l = c.point(9,7)
-        m = c.point(17,20)
-        self.assertEqual( m, g + l) # addition m = g + l
-        
-        g_inv = -g  # point inversion
-        # self.assertEqual( g + g_inv, IDENTITY ) #  inversion
-        self.assertEqual( g - g , IDENTITY )    # subraction of inverse
-        self.assertEqual( l, m - g)             # l = m - g
-        self.assertEqual( g, m - l)             # g = m - l
-        d = c.point(7,12)
-        self.assertEqual( g.double(), d )
-        self.assertEqual( g + g, d )
-        self.assertEqual( 2*g, d)
-        self.assertEqual( g*2, d)
-        
-    def test_x962_1(self):
-        c = SimpleCurve()
-        IDENTITY = c.identity()
-        g = c.point(13, 7)
-        check = IDENTITY
-        for i in range( 7 + 1 ):
-            p = ( i % 7 ) * g
-            self.assertEqual( p, check)
-            check = check + g
-
-    def test_x962_2(self):
-        """ Samples from X9.62 using NIST Curve P-192 """
-        c = NIST_P192()
-        p192 = c.point(c.xG, c.yG)
-        d = 651056770906015076056810763456358567190100156695615665659L
-        Q = d * p192
-        self.assertEqual( Q.x, 0x62B12D60690CDCF330BABAB6E69763B471F994DD702D16A5L )
-        #
-        k = 6140507067065001063065065565667405560006161556565665656654L
-        R = k * p192
-        self.assertEqual( R.x, 0x885052380FF147B734C330C43D39B2C4A89F29B0F749FEADL )
-        self.assertEqual( R.y, 0x9CF9FA1CBEFEFB917747A3BB29C072B9289C2547884FD835L )
-        #
-        u1 = 2563697409189434185194736134579731015366492496392189760599L
-        u2 = 6266643813348617967186477710235785849136406323338782220568L
-        temp = u1 * p192 + u2 * Q
-        self.assertEqual( temp.x, 0x885052380FF147B734C330C43D39B2C4A89F29B0F749FEADL )
-        self.assertEqual( temp.y, 0x9CF9FA1CBEFEFB917747A3BB29C072B9289C2547884FD835L )
- 
+from cryptopy.ecc.curves import NIST_P192, NIST_P521
        
 class TestNistCurves(unittest.TestCase):
     """ Examples from
@@ -170,51 +109,6 @@ class TestNistCurves(unittest.TestCase):
         yR = 0x0000000fe44344e79da6f49d87c1063744e5957d9ac0a505bafa8281c9ce9ff25ad53f8da084a2deb0923e46501de5797850c61b229023dd9cf7fc7f04cd35ebb026d89d
         r = p521.point(xR,yR)
         self.assertEqual( r, d*s + e*t )
-        
-        
-class TestPointUncompression(unittest.TestCase):
-    """ Basic point decomprssion not using y-coord hint """
-    def test_ned_point(self):
-        x = 0x29d54ba5bd599041326f84ab894bc1c0a4d9a8474b4b9cf64640c71f8e3bbb34
-        curve = BrainPoolP256r1()
-        Q = curve.uncompress(x)
-           
-    
-class TestAllCurves(unittest.TestCase):
-    """ Basic validation of Curve generators """
-    def test_G_times_n(self):
-        for Curve in smallWeierstrassCurves: # now may work for Edwards 
-            c = Curve()
-            IDENTITY = c.identity()
-            print c.curveId, c.oid
-            G = c.generator()
-            self.assertEqual( c.n * G, IDENTITY )
-
-class TestCurve25519(unittest.TestCase):
-    """ Curve25519 - a Edwards Curve """
-    
-    def test_C25519_DH(self):
-        """ Test vectors taken from the NaCl distribution
-            https://github.com/cryptosphere/rbnacl/blob/master/lib/rbnacl/test_vectors.rb
-        """
-        c = Curve25519()
-        d_a = 0x77076d0a7318a57d3c16c17251b26645df4c2f87ebc0992ab177fba51db92c2a
-        Q_a = 0x8520f0098930a754748b7ddcb43ef75a0dbf3a0d26381af4eba4a98eaa9b4e6a
-        d_b = 0x5dab087e624a8a4b79e17f8b83800ee66f3bb1292618b6fd1c2f8b27ff88e0eb
-        Q_b = 0xde9edb7d7b7dc1b4d35b61c2ece435373f8343c85b78674dadfc7e146f882b4f
-        Sab = 0x4a5d9d5ba4ce2de1728e3bf480350f25e07e21c947d19e3376f09b3c1e161742
-        
-    def test_C25519_DH(self):
-        """ draft-josefsson-tls-curve25519-02 """
-        c = Curve25519()
-        g = c.generator()
-        d_A = 0x5AC99F33632E5A768DE7E81BF854C27C46E3FBF2ABBACD29EC4AFF517369C660
-        d_B = 0x47DC3D214174820E1154B49BC6CDB2ABD45EE95817055D255AA35831B70D3260
-        Qa = d_A*g
-        x_A = 0x057E23EA9F1CBE8A27168F6E696A791DE61DD3AF7ACD4EEACC6E7BA514FDA863
-        x_B = 0x6EB89DA91989AE37C7EAC7618D9E5C4951DBA1D73C285AE1CD26A855020EEF04
-        x_S = 0x61450CD98E36016B58776A897A9F0AEF738B99F09468B8D6B8511184D53494AB
-
 
 if __name__ == '__main__':
     unittest.main()
