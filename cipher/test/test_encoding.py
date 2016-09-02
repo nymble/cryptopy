@@ -8,58 +8,44 @@
     Creative Commons Attribution 4.0 International License.
 """
 import unittest
-from hashlib import sha256
 
 if __name__ == '__main__' and __package__ is None:
     from os import sys, path
-    sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))   
-    from encoding import b27encode, b27decode
-else:
-    from ..encoding import b27encode, b27decode
+    p = path.abspath(__file__)  # ./cryptopy/persona/test/test_cipher_suite.py
+    for i in range(4):  p = path.dirname( p )   # four levels down to project '.'
+    sys.path.append( p )
+    
+from cryptopy.cipher.encoding import b27encode, b27decode
+from cryptopy.cipher.encoding import b85encode, b85decode
+from cryptopy.cipher.encoding import b94encode, b94decode 
+from cryptopy.cipher.encoding import int_to_string, string_to_int
 
-class TestEncode(unittest.TestCase):
+
+class TestBase85(unittest.TestCase):
     """ """
-    def test_b27(self):
-        """  """
+    def test_RFC1924_Example(self):
+        """ Test conformance of to RFC1924 definition of base85
+             RFC1924 example of a IPv6 address ->  1080:0:0:0:8:800:200C:417A
+        """
+        rfc1924_example_number = 0x108000000000000000080800200c417a 
+        rfc1924_example = int_to_string( rfc1924_example_number )
+        rfc1924_example_encoded = '4)+k&C#VzJ4br>0wv%Yp'
+        base85_encoded = b85encode(rfc1924_example)
+        self.assertEqual( base85_encoded , rfc1924_example_encoded )
+        self.assertEqual( b85decode(base85_encoded), rfc1924_example )
+        
 
-        self.assertEqual(  1, 1 )
+class TestEncodeDecode(unittest.TestCase):
+    """ Quick test of each encoding routine for 0 to 999 """
+    def test_basic(self):
+        """  """
+        for i in range(0,1000):
+            test_octets = int_to_string(i)
+            self.assertEqual( string_to_int(test_octets), i )
+            self.assertEqual( b27decode(b27encode(test_octets)) , test_octets ) 
+            self.assertEqual( b85decode(b85encode(test_octets)) , test_octets ) 
+            self.assertEqual( b94decode(b94encode(test_octets)) , test_octets ) 
 
 if __name__ == '__main__':
-    # stubbed for now
-    # unittest.main()
-    service_name = 'service.name.example'
-    hash_value   = sha256( service_name  ).digest()
-    usid         = hash_value[0:16]
-    usib_b27     = b27encode(usid)
-    print 'usid b27', usib_b27
-    
-    service_name = usib_b27
-    hash_value   = sha256( service_name  ).digest()
-    usid         = hash_value[0:16]
-    usib_b27     = b27encode(usid)
-    print 'usid b27', usib_b27
-    
-    service_name = usib_b27
-    hash_value   = sha256( service_name  ).digest()
-    usid         = hash_value[0:16]
-    usib_b27     = b27encode(usid)
-    print 'usid b27', usib_b27
-    
-    service_name = usib_b27
-    hash_value   = sha256( service_name  ).digest()
-    usid         = hash_value[0:16]
-    usib_b27     = b27encode(usid)
-    print 'usid b27', usib_b27
-    
-    service_name = usib_b27
-    hash_value   = sha256( service_name  ).digest()
-    usid         = hash_value[0:16]
-    usib_b27     = b27encode(usid)
-    print 'usid b27', usib_b27
+    unittest.main()
 
-    
-    service_name = usib_b27
-    hash_value   = sha256( service_name  ).digest()
-    usid         = hash_value[0:16]
-    usib_b27     = b27encode(usid)
-    print 'usid b27', usib_b27
