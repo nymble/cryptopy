@@ -113,6 +113,8 @@ class TwistedEdwardsCurveFp( EllipticCurveFp ):
         x = g.x; y = g.y; d = curve.d;  a = curve.a;  p = curve.p
 
         return  (a*x**2 + y*y - 1 - d*x*x*y*y)  % p == 0
+        #xx = x*x
+        #return  (a*xx - 1 + y*(1 - d*xx*y))  % p == 0
             
     def add_points(curve, p1, p2):
         """ Add two points on the curve """

@@ -127,7 +127,7 @@ def main():
     #for i in d:
     #    print d[i]
 
-# Make this test module runnable from the command prompt
+# Make this module runnable from the command prompt
 if __name__ == "__main__":
     main()
 

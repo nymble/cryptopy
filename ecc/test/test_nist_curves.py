@@ -72,11 +72,14 @@ class TestNistCurves(unittest.TestCase):
             We give the results of basic calculations on a pair of
             points S and T using affine coordinates. S has coordinates:
         """       
+        curve = NIST_P256()
         xS = 0xde2444bebc8d36e682edd27e0f271508617519b3221a8fa0b77cab3989da97c9
         yS = 0xc093ae7ff36e5380fc01a5aad1e66659702de80f53cec576b6350b243042a256
+        s = curve.point(xS,yS)
         # and T has coordinates:
         xT = 0x55a8b00f8da1d44e62f6b3b25316212e39540dc861c89575bb8cf92e35e0986b
         yT = 0x5421c3209c2d6c704835d82ac4c3dd90f61a8a52598b9e7ab656e9d8c8b24316
+        t = curve.point(xT,yT)
 
     def test_NIST_P521(self):
         """ 4.5 Curve P-521
