@@ -3,13 +3,13 @@
 
     Support for math operations module prime p, GF(p)
     Overloads Python operators + - / ^  ==
-    Note that '^' is used for exponentiation in addition to than Python '**"
-    for better maping to math references
+    Note that '^' is used for exponentiation in addition to Python '**"
+    for more readable mapping to math references
     
         Usage example:
             gfp = GFp(2**255 - 19)
             x = gfp(x_value)
-            y = x*^2+3*x+1    # math and y result in GF(p)
+            y = x*^2+3*x+1    # math performed and y result in GF(p)
     
     Paul A. Lambert Copyright 2015
 """
