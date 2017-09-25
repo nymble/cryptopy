@@ -1,12 +1,12 @@
 #!/usr/bin/env python
-""" chacha.py
+""" chacha_poly.py
 
     A pure python implementation of the ChaCha stream cipher
-    based on RFC 7539. Text from the RFC is used as
-    comments of this reference implementation.
+    and Poly1305 MAC based on RFC 7539. Text from the RFC is 
+    used as comments of this reference implementation.
     
-    The implementtaion supports incremental encryption to
-    enable encryption of large files.
+    The implementtaion supports encryption of large files 
+    with incremental encryption.
 
     [RFC7539] Y. Nir Y., Langley A.,
               "ChaCha20 and Poly1305 for IETF Protocols", May 2015,

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-""" test_chacha.py
+""" test_chacha_poly.py
 
     Unit tests for the ChaCha stream cipher.
     Test vectors are taken from:
@@ -17,7 +17,8 @@ if __name__ == '__main__' and __package__ is None:
     from os import sys, path
     sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from chacha import ChaCha, quarter_round, inner_block
+from chacha_poly import ChaCha, quarter_round, inner_block
+from chacha_poly import le_bytes_to_num, num_to_16_le_bytes, clamp
 
 def to_octets(text):
     """ Convert ascii hex value with whitespaces
@@ -271,7 +272,7 @@ And the mome raths outgrabe."""
 
 
 
-from chacha import poly1305_mac
+from chacha_poly import poly1305_mac
 
 class Poly1305_Tests_RFC7539(unittest.TestCase):
     """ Poly1305 tests from:
@@ -308,13 +309,10 @@ class Poly1305_Tests_RFC7539(unittest.TestCase):
         r_num = 0x806d5400e52447c036d555408bed685
         
         # validate above examples
-        from chacha import le_bytes_to_num
         self.assertEqual( le_bytes_to_num(s), s_num )
         
-        from chacha import num_to_16_le_bytes
         self.assertEqual( s, num_to_16_le_bytes(s_num) )
         
-        from chacha import clamp
         self.assertEqual( r_num, clamp(le_bytes_to_num(r)) )
 
         """
