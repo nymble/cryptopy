@@ -1,12 +1,9 @@
 #!/usr/bin/env python
 """ chacha_poly.py
 
-    A pure python implementation of the ChaCha stream cipher
-    and Poly1305 MAC based on RFC 7539. Text from the RFC is
-    used as comments of this reference implementation.
-
-    This implementtaion supports encryption of large files
-    with an optional block oriented api usage.
+A pure python implementation of the ChaCha stream cipher, the
+Poly1305 MAC, and ChaCha20 AEAD based on RFC 7539.
+Text from the RFC is used as comments in this reference implementation.
 
     [RFC7539] Y. Nir Y., Langley A.,
               "ChaCha20 and Poly1305 for IETF Protocols", May 2015,
@@ -38,16 +35,7 @@ def chacha_q_round(a, b, c, d):
 
    The basic operation of the ChaCha algorithm is the quarter round.  It
    operates on four 32-bit unsigned integers, denoted a, b, c, and d.
-   The operation is as follows (in C-like notation):
-
-   1.  a += b; d ^= a; d <<<= 16;
-   2.  c += d; b ^= c; b <<<= 12;
-   3.  a += b; d ^= a; d <<<= 8;
-   4.  c += d; b ^= c; b <<<= 7;
-
-   Where "+" denotes integer addition modulo 2^32, "^" denotes a bitwise
-   Exclusive OR (XOR), and "<<< n" denotes an n-bit left rotation
-   (towards the high bits).
+   The operation is as follows:
     """
     a = (a + b) & 0xFFFFFFFF
     d ^= a
@@ -65,18 +53,6 @@ def chacha_q_round(a, b, c, d):
     b ^= c
     b = ((b << 7) & 0xFFFFFFFF) | (b >> 25)
     return a, b, c, d
-"""
-   For example, let's see the add, XOR, and roll operations from the
-   fourth line with sample numbers:
-
-   o  a = 0x11111111
-   o  b = 0x01020304
-   o  c = 0x77777777
-   o  d = 0x01234567
-   o  c = c + d = 0x77777777 + 0x01234567 = 0x789abcde
-   o  b = b ^ c = 0x01020304 ^ 0x789abcde = 0x7998bfda
-   o  b = b <<< 7 = 0x7998bfda <<< 7 = 0xcc5fed3c
-"""
 
 def quarter_round(state, x, y, z, w):
     """
@@ -137,50 +113,10 @@ def quarter_round(state, x, y, z, w):
    so that the first 32 bits are unique per sender, while the other 64
    bits come from a counter.
 
-   The ChaCha20 state is initialized as follows:
-
-   o  The first four words (0-3) are constants: 0x61707865, 0x3320646e,
-      0x79622d32, 0x6b206574.
-
-   o  The next eight words (4-11) are taken from the 256-bit key by
-      reading the bytes in little-endian order, in 4-byte chunks.
-
-   o  Word 12 is a block counter.  Since each block is 64-byte, a 32-bit
-      word is enough for 256 gigabytes of data.
-
-   o  Words 13-15 are a nonce, which should not be repeated for the same
-      key.  The 13th word is the first 32 bits of the input nonce taken
-      as a little-endian integer, while the 15th word is the last 32
-      bits.
-
-       cccccccc  cccccccc  cccccccc  cccccccc
-       kkkkkkkk  kkkkkkkk  kkkkkkkk  kkkkkkkk
-       kkkkkkkk  kkkkkkkk  kkkkkkkk  kkkkkkkk
-       bbbbbbbb  nnnnnnnn  nnnnnnnn  nnnnnnnn
-
-   c=constant k=key b=blockcount n=nonce
-
    ChaCha20 runs 20 rounds, alternating between "column rounds" and
    "diagonal rounds".  Each round consists of four quarter-rounds, and
    they are run as follows.  Quarter rounds 1-4 are part of a "column"
    round, while 5-8 are part of a "diagonal" round:
-
-   1.  QUARTERROUND ( 0, 4, 8,12)
-   2.  QUARTERROUND ( 1, 5, 9,13)
-   3.  QUARTERROUND ( 2, 6,10,14)
-   4.  QUARTERROUND ( 3, 7,11,15)
-   5.  QUARTERROUND ( 0, 5,10,15)
-   6.  QUARTERROUND ( 1, 6,11,12)
-   7.  QUARTERROUND ( 2, 7, 8,13)
-   8.  QUARTERROUND ( 3, 4, 9,14)
-
-   At the end of 20 rounds (or 10 iterations of the above list), we add
-   the original input words to the output words, and serialize the
-   result by sequencing the words one-by-one in little-endian order.
-
-   Note: "addition" in the above paragraph is done modulo 2^32.  In some
-   machine languages, this is called carryless addition on a 32-bit
-   word.
     """
 
 def inner_block(state):
@@ -196,6 +132,15 @@ def inner_block(state):
     quarter_round(state, 1, 6, 11, 12)
     quarter_round(state, 2, 7,  8, 13)
     quarter_round(state, 3, 4,  9, 14)
+    """
+   At the end of 20 rounds (or 10 iterations of the above list), we add
+   the original input words to the output words, and serialize the
+   result by sequencing the words one-by-one in little-endian order.
+
+   Note: "addition" in the above paragraph is done modulo 2^32.  In some
+   machine languages, this is called carryless addition on a 32-bit
+   word.
+    """
 
 
 class ChaCha(object):
@@ -222,37 +167,20 @@ class ChaCha(object):
             c=constant k=key b=block_counter n=nonce
         """
         self.state = 16*[0]
-
         # The first four words (0-3) are constants:
-        self.state[ 0] = 0x61707865
-        self.state[ 1] = 0x3320646e
-        self.state[ 2] = 0x79622d32
-        self.state[ 3] = 0x6b206574
+        self.state[0:4] = 0x61707865, 0x3320646e, 0x79622d32, 0x6b206574
 
         # The next eight words (4-11) are taken from the 256-bit key by
         # reading the bytes in little-endian order, in 4-byte chunks.
-        k = unpack('<IIIIIIII', key)
-        self.state[ 4] = k[0]
-        self.state[ 5] = k[1]
-        self.state[ 6] = k[2]
-        self.state[ 7] = k[3]
-        self.state[ 8] = k[4]
-        self.state[ 9] = k[5]
-        self.state[10] = k[6]
-        self.state[11] = k[7]
+        self.state[4:12] = unpack('<IIIIIIII', key)
 
         # Word 12 is a block counter.  Since each block is 64-byte, a 32-bit
         # word is enough for 256 gigabytes of data.
         self.state[12] = block_counter
 
-        # Words 13-15 are a nonce, which should not be repeated for the same
-        # key.  The 13th word is the first 32 bits of the input nonce taken
-        # as a little-endian integer, while the 15th word is the last 32
-        # bits.
-        n = unpack('<III', nonce)
-        self.state[13] = n[0]
-        self.state[14] = n[1]
-        self.state[15] = n[2]
+        # Words 13-15 are a nonce, which should not be
+        # repeated for the same key.
+        self.state[13:16] = unpack('<III', nonce)
 
     def chacha20_block(self):
         """ The ChaCha 'block' function.
@@ -344,7 +272,7 @@ class Poly1305(object):
     o  r[4], r[8], and r[12] are required to have their bottom two bits
     clear (be divisible by 4)
 
-    The following  code clamps "r" to be appropriate:
+    The following code clamps "r" to be appropriate:
 
     The "s" should be unpredictable, but it is perfectly acceptable to
     generate both "r" and "s" uniquely each time.  Because each of them
@@ -394,7 +322,6 @@ def le_bytes_to_num(bytes):
 def num_to_16_le_bytes(num):
     """ Convert number to little-endian octet string """
     return ''.join(map(lambda i: chr(0xff & (num >> 8*i)), range(16)))
-
 
 """
     2.6.  Generating the Poly1305 Key Using ChaCha20
@@ -638,6 +565,19 @@ class ChaCha20_AEAD(object):
     def decrypt(self, aad, iv, cipher_text):
         """ decrypt is same as encrypt """
         return self.encrypt(aad, iv, cipher_text)
+    
+class ChaCha_Poly_AEAD(ChaCha20_AEAD):
+    """ """
+    def encrypt(self, aad, iv, plain_text):
+        cipher_text, tag = super().encrypt(aad, iv, plain_text)
+        return iv + cipher_text + tag
+    
+    def decrypt(self, aad, iv_cipher_text_tag):
+        iv = iv_cipher_text_tag[0:]
+        tag = iv_cipher_text_tag[-tag_length:]
+        plain_text, calculated_tag = super().encrypt(aad, iv, plain_text)
+        assert tag == calculated_tag
+
 
     """
 3.  Implementation Advice

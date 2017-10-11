@@ -363,7 +363,8 @@ class Poly1305_Tests_RFC7539(unittest.TestCase):
     accumulator and "Block" the current block:
 
     Block #1
-
+        """
+        """
     Acc = 00
     Block = 6f4620636968706172676f7470797243
     Block with 0x01 byte = 016f4620636968706172676f7470797243
@@ -372,7 +373,8 @@ class Poly1305_Tests_RFC7539(unittest.TestCase):
     (Acc+Block) * r =
     b83fe991ca66800489155dcd69e8426ba2779453994ac90ed284034da565ecf
     Acc = ((Acc+Block)*r) % P = 2c88c77849d64ae9147ddeb88e69c83fc
-
+        """
+        """
     Block #2
 
     Acc = 2c88c77849d64ae9147ddeb88e69c83fc

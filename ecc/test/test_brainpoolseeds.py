@@ -69,7 +69,7 @@ def brainPoolRequirements( curve ):
         Not complete yet ...
     """
     a = curve.a;  b = curve.b;  p = curve.p
-    assert  p > 3
+    assert p > 3
     assert p % 4 == 3   # The prime number p shall be congruent 3 mod 4
     assert prime( p )
     assert (4*a**3 + 27*b**2) % p != 0
