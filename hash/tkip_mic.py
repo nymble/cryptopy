@@ -1,6 +1,6 @@
 """ crypto.keyedHash.tkip_mic
 
-    A reference implementation of the TKIP Message Integrety Chek (MIC)
+    A reference implementation of the TKIP Message Integrety Check (MIC)
     that is defined in IEEE 802.11i
 
     The MIC is based on Michael, a 64-bit MIC, with a design strength of 20 bits.
