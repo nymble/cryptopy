@@ -14,6 +14,7 @@
     Creative Commons Attribution 4.0 International License.
 """
 import unittest
+from binascii import b2a_hex
 
 if __name__ == '__main__' and __package__ is None:
     from os import sys, path
@@ -167,11 +168,14 @@ def cmac_mac_test(test='',key='', m='', t=''):
     m = decode_vector( m )
     t = decode_vector( t )
     cm = aes_cmac(key, m)
+    print('key: {}\nm: {}\ncmac: {}\n'.format(b2a_hex(key), b2a_hex(m), b2a_hex(cm)))
     assert t == cm
 
 def decode_vector(string):
     """ Covert readable test vector string to an octet string """
     return ''.join( string.split() ).decode('hex')
+
+
     
 if __name__ == '__main__':
     unittest.main()
