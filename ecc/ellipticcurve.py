@@ -33,6 +33,7 @@ class EllipticCurve(object):
         """ Return the predefined generator point G """
         return self.point(self.xG, self.yG)
 
+
 class EllipticCurveFp(EllipticCurve):
     """ Elliptic Curve over the field of integers modulo a prime p. """
     def __init__(self):
