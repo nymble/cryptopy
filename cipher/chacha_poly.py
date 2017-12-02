@@ -172,6 +172,7 @@ class ChaCha(object):
 
         # The next eight words (4-11) are taken from the 256-bit key by
         # reading the bytes in little-endian order, in 4-byte chunks.
+        assert len(key) == 32
         self.state[4:12] = unpack('<IIIIIIII', key)
 
         # Word 12 is a block counter.  Since each block is 64-byte, a 32-bit
@@ -180,6 +181,7 @@ class ChaCha(object):
 
         # Words 13-15 are a nonce, which should not be
         # repeated for the same key.
+        assert len(nonce) == 12
         self.state[13:16] = unpack('<III', nonce)
 
     def chacha20_block(self):
@@ -196,18 +198,11 @@ class ChaCha(object):
         # return serialize(out_state) for use as key stream
         return ''.join([ pack('<I', word) for word in out_state ])
 
-    def encrypt(self, plain_text, more=False):
-        """ Encrypt plaintext with key, nonce and initial counter
-            set by object initialization.
-            When 'more' is True, additional encryption operations
-            will continue with prior counter, nonce value. This
-            is to support large file encryption.
+    def encrypt(self, plain_text):
+        """ Encrypt plaintext with key. The nonce and initial counter
+            values were set by object initialization.
         """
-        if self.nonce_used: raise ValueError("Nonce reused")
-
         blocks, remainder = divmod(len(plain_text), 64)
-        if more and remainder>0:
-            raise ValueError("'more' only valid for exact multiples of block size")
         if remainder > 0:
             blocks += 1
 
@@ -224,23 +219,18 @@ class ChaCha(object):
             encrypted_block = [chr(ord(b_char)^ord(k_char)) for b_char, k_char in zip(block, key_stream)]
             encrypted_message.extend( encrypted_block )
 
-        if not more:
-            self.nonce_used = True
         return ''.join(encrypted_message) # converted from list of chars to octet string
 
-    def decrypt(self, plain_text, more=False):
+    def decrypt(self, plain_text):
         """ Decryption is done in the same way as encryption.
         """
         return self.encrypt( plain_text )
 
     def __init__(self, key, counter=0, nonce=None):
-        """ ChaCha object initialization """
-        if nonce:
-            self.nonce = nonce
-        else:
+        """ Random nonce if not provided. """
+        if not nonce:
             nonce = urandom(12)
-        self.nonce = nonce
-        self.nonce_used = False # track nonce usage to prevent inappropriate reuse
+        
         self.initialize( key, counter, nonce )
 
 class Poly1305(object):

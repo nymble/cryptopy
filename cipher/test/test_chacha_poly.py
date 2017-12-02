@@ -12,8 +12,9 @@
 
     Paul A. Lambert 2017
 """
-import binascii
+from binascii import a2b_hex, b2a_hex
 import unittest
+from struct import pack
 
 if __name__ == '__main__' and __package__ is None:
     from os import sys, path
@@ -30,7 +31,7 @@ def to_octets(text):
         and separators to octets.
     """
     text = text.replace(':','')
-    return binascii.a2b_hex( ''.join(text.split()) )
+    return a2b_hex( ''.join(text.split()) )
 
 
 class ChaCha_Tests_RFC7539(unittest.TestCase):
@@ -137,7 +138,7 @@ A.2.  ChaCha20 Encryption
             """ Convert ascii hex value with whitespaces
                 to octets.
             """
-            return binascii.a2b_hex( ''.join(s.split()) )
+            return a2b_hex( ''.join(s.split()) )
 
         def validate_test_vectors():
             """ Create new ChaCha instance, encrypt and decrypt test vectors """
@@ -244,73 +245,7 @@ And the mome raths outgrabe."""
         validate_test_vectors()
 
 
-class ChaCha_Additional_tests(unittest.TestCase):
-    """ ChaCha API usage and nonce generation. This implementation:
-        - checks for some cases of nonce reuse
-        - supports a 'more' flag to support incremental
-          encryption of large files
-    """
-    def test_nonce_api(self):
-        """ Tests of nonce usage and detection of nonce reuse"""
-        key = to_octets("""
-            00 01 00 00 00 00 00 00 00 ff 00 00 00 00 00 01
-            01 00 00 00 00 00 00 00 00 00 00 00 01 00 00 00
-            """)
-        nonce = to_octets("""
-            01 02 03 00 00 00 00 00 00 00 00 00
-            """)
-        plain_text = 11*"""API related test"""
-
-        chacha = ChaCha(key, nonce=nonce)
-        ct1 = chacha.encrypt( plain_text )
-        chacha = ChaCha(key, nonce=nonce)
-        pt1 = chacha.decrypt( ct1 )
-
-        # check for error on second use of the manually set nonce
-        self.assertRaises(ValueError, chacha.encrypt, plain_text)
-
-        chacha=ChaCha(key) # auto generation of nonce
-        ct2 = chacha.encrypt( plain_text )
-        self.assertNotEqual(ct1, ct2)
-
-        nonce = chacha.nonce # retrieve nonce from prior usage
-        chacha = ChaCha( key, nonce=nonce )
-        pt2 = chacha.decrypt( ct2 )
-        self.assertEqual( pt1, pt2 )
-
-    def test_block_oriented(self):
-        """ Test usage of block oriented encrypt/decrypt
-            for large files.
-        """
-        key = to_octets("""
-            00 01 00 00 00 00 00 00 00 ff 00 00 00 00 00 01
-            01 00 00 00 00 00 00 00 00 00 00 00 01 00 00 00
-            """)
-        nonce = to_octets("""
-            01 02 03 00 00 00 00 00 00 00 00 00
-            """)
-
-        # test various sizes of plain text to validate blocking
-        for pt_size in (0, 1, 63, 64, 65, 127, 128, 129, 130):
-            pt = ''.join([chr(i) for i in range(pt_size)])
-
-            chacha=ChaCha(key)
-            b_size = ChaCha.block_size
-            # this would typically be performed by reading file blocks
-            blocks, remainder = divmod( len(pt), ChaCha.block_size )
-            ct = ''
-            for j in range(blocks):
-                ct += chacha.encrypt( pt[j*b_size:(j+1)*b_size], more=True)
-            ct += chacha.encrypt( pt[blocks*b_size:], more=False)
-
-            nonce = chacha.nonce # reuse nonce to test block oriented encryption
-            chacha = ChaCha(key, nonce=nonce)
-            ct2 = chacha.encrypt( pt )
-
-            self.assertEqual(ct, ct2)  # block oriented and full msg encrypt compare
-
-
-class Poly1305_Tests_RFC7539(unittest.TestCase):
+class Poly1305_Tests_RFC7539_252(unittest.TestCase):
     """ Poly1305 tests """
 
     def test_poly1305_example(self):
@@ -922,6 +857,88 @@ A.5.  ChaCha20-Poly1305 AEAD Decryption
             2f e2 80 9c 77 6f 72 6b 20 69 6e 20 70 72 6f 67
             72 65 73 73 2e 2f e2 80 9d
             """)
+
+
+class ChaCha_Additional_tests(unittest.TestCase):
+    """ ChaCha API usage and nonce generation. This implementation:
+    """
+    def test_nonce_api(self):
+        """ Tests of nonce usage """
+        key = to_octets("""
+            00 01 00 00 00 00 00 00 00 ff 00 00 00 00 00 01
+            01 00 00 00 00 00 00 00 00 00 00 00 01 00 00 00
+            """)
+        nonce = to_octets("""
+            01 02 03 00 00 00 00 00 00 00 00 00
+            """)
+        plain_text = 11*"""API related test"""
+        
+        chacha = ChaCha(key, nonce=nonce)
+        ct1 = chacha.encrypt( plain_text )
+        chacha = ChaCha(key, nonce=nonce)
+        pt1 = chacha.decrypt( ct1 )
+        # ....
+        ct2= chacha.encrypt( plain_text )
+        
+        
+        chacha=ChaCha(key) # auto generation of nonce
+        # retrieve nonce for testing
+        nonce = pack( '<III', chacha.state[13], chacha.state[14], chacha.state[15])
+        
+        ct2 = chacha.encrypt( plain_text )
+        self.assertNotEqual(ct1, ct2)
+        
+        chacha = ChaCha( key, nonce=nonce )
+        pt2 = chacha.decrypt( ct2 )
+        self.assertEqual( pt1, pt2 )
+
+    def test_random_nonce(self):
+        """ Tests of nonce usage """
+        key = to_octets("""
+            00 01 00 00 00 00 00 00 00 ff 00 00 00 00 00 01
+            01 00 00 00 00 00 00 00 00 00 00 00 01 00 00 00
+            """)
+        plain_text = 11*"""Random nonce test"""
+        n_dict = {}
+        for i in range(100000):
+            chacha=ChaCha(key) # auto generation of nonce
+            # retrieve nonce for testing
+            nonce = pack( '<III', chacha.state[13], chacha.state[14], chacha.state[15])
+            if nonce in n_dict:
+                raise ValueError( "urandom generated duplicate nonce" )
+            else:
+                n_dict[nonce] = True
+    
+    def test_block_oriented(self):
+        """ Test usage of block oriented encrypt/decrypt
+            for large files.
+            """
+        key = to_octets("""
+            00 01 00 00 00 00 00 00 00 ff 00 00 00 00 00 01
+            01 00 00 00 00 00 00 00 00 00 00 00 01 00 00 00
+            """)
+        nonce = to_octets("""
+            01 02 03 00 00 00 00 00 00 00 00 00
+            """)
+        
+        # test various sizes of plain text to validate blocking
+        for pt_size in (0, 1, 63, 64, 65, 127, 128, 129, 130):
+            pt = ''.join([chr(i) for i in range(pt_size)])
+            nonce = 'aaaaaaaaaaaa'
+            chacha=ChaCha(key, nonce=nonce)
+            b_size = ChaCha.block_size
+            # this would typically be performed by reading file blocks
+            blocks, remainder = divmod( len(pt), ChaCha.block_size )
+            ct = ''
+            for j in range(blocks):
+                ct += chacha.encrypt( pt[j*b_size:(j+1)*b_size] )
+            ct += chacha.encrypt( pt[blocks*b_size:] )
+            
+            # reuse nonce to test block oriented encryption
+            chacha = ChaCha(key, nonce=nonce)
+            ct2 = chacha.encrypt( pt )
+    
+        self.assertEqual(ct, ct2)  # block oriented and full msg encrypt compare
 
 
 # Make this test module runnable from the command prompt
