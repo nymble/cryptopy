@@ -9,8 +9,8 @@ class permutation(object):
 
     def map_orbits_of_permutation(permutation):
         """ Creates a dictionary of permutation orbits indexed by the first element of the cycle/orbit """
-        gdict={}     # a dictionary of the orbits indexed by the first orbit element
-        touched=[0 for i in range(len(permutation))]
+        gdict = {}     # a dictionary of the orbits indexed by the first orbit element
+        touched = [0 for i in range(len(permutation))]
         for i in range(len(permutation)):
             touched.append(0)
         for i in range(len(permutation)):

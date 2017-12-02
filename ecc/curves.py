@@ -37,7 +37,7 @@
     xG - the x-coordinate of a generator point G for the curve        
     yG - the y-coordinate of a generator point G for the curve
     n  - the order of the generator point G
-    h - the cofactor of the curve
+    h  - the cofactor of the curve
     seed - used for some curves to demonstrate the provenance of
            the curve parameters and included for reference when available
 
@@ -83,6 +83,7 @@ class SECP_192r1( SmallWeierstrassCurveFp ):
     b = 0x64210519e59c80e70fa7e9ab72243049feb8deecc146b9b1
     xG = 0x188da80eb03090f67cbf20eb43a18800f4ff0afd82ff1012
     yG = 0x07192b95ffc8da78631011ed6b24cdd573f977a11e794811
+    # n = 0xffffffffffffffffffffffff99def836146bc9b1b4d22831
     n = 6277101735386680763835789423176059013767194773182842284081
     h = 1 # cofactor
 
