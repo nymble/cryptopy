@@ -1,8 +1,8 @@
-"""  crypto.cipher.sbox_nonlin
+"""  cryptopy.analysis.sbox_nonlinearity.py
 
     sbox non-linearity analysis using walsh functions
     
-    Currently hardwired for AES and SMS4.
+    Currently hardcoded AES, SMS4 and Streebog.
 
     Copyright (c) 2008 by Paul A. Lambert
     
